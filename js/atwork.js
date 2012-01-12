@@ -2,9 +2,9 @@
 	var timer;
 
 	function TimeSpan(ms) {
-		this.seconds = Math.floor(ms / 1000);
-		this.minutes = Math.floor(this.seconds / 60);
-		this.hours = Math.floor(this.minutes / 60);
+		this.seconds = Math.floor(ms/1000) % 60;
+		this.minutes = Math.floor(ms/60000) % 60;
+		this.hours = Math.floor(ms/3600000) % 24;
 	}
 
 	function Timer() {
@@ -23,7 +23,7 @@
 			var now = new Date();
 			var ms = now - this._begin;
 			var ts = new TimeSpan(ms);
-			this._elem.innerText = ts.minutes + ":" + ts.seconds;
+			this._elem.innerText = this.hours + ":" + ts.minutes + ":" + ts.seconds;
 		}
 	};
 
