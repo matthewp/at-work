@@ -1,0 +1,10 @@
+{
+	"name": "At Work",
+	"launch_path": "/atwork.html",
+	"developer": {
+		"name": "Matthew Phillips",
+		"url": "http://www.matthewphillips.info"
+	},
+	"icons": {
+		"120": ""
+	}
