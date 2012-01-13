@@ -66,13 +66,16 @@
 		},
 		update: function() {
 			var ts = this.elapsed;
-			this._elem.innerText = ts.toString();
+			this._elem.innerHTML = ts.toString();
 		},
 		handleEvent: function timerHandle(e) {
-			this.running ? this.stop() : this.start();
+      if(e.type === 'click')
+			  this.running ? this.stop() : this.start();
+
+      e.preventDefault();
 		},
 		setBtnText: function(text) {
-			this._btn.innerText = text;
+			this._btn.innerHTML = text;
 		},
 		get elapsed() {
 			if(!this._begin)
@@ -80,7 +83,7 @@
 
 			var now = new Date();
 			var ms = now - this._begin;
-			return new TimeSpan(this.time.totalmilliseconds + ms);
+			return this.time.add(ms);
 		}
 	};
 
