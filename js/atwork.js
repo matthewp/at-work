@@ -55,7 +55,7 @@ Timer.prototype = {
 		this._begin = new Date();
 		this._id = setInterval(this.update.bind(this), 500);
 	
-		this.setBtnText("stop");
+		this.setBtnText("Stop");
 	},
 	stop: function() {
 		this.running = false;
@@ -64,7 +64,7 @@ Timer.prototype = {
 
 		this.time = this.elapsed;
 
-		this.setBtnText("start");
+		this.setBtnText("Start");
 	},
 	update: function() {
 		var ts = this.elapsed;

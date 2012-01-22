@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'IconicFill';
+  src: url('fonts/iconic_fill.eot');
+  src: local('IconicFill'), 
+    url('fonts/iconic_fill.svg#iconic') format('svg'), 
+    url('fonts/iconic_fill.otf') format('opentype'); 
+}
+
+@font-face {
+  font-family: 'IconicStroke';
+  src: url('fonts/iconic_stroke.eot');
+  src: local('IconicStroke'), 
+    url('fonts/iconic_stroke.svg#iconic') format('svg'),
+    url('fonts/iconic_stroke.otf') format('opentype'); 
+}
+
 html, body {
 	height: 100%;
 	width: 100%;
@@ -15,14 +31,35 @@ body {
 }
 
 .action a {
-	display: block;
+  background: #F0EAEA;
+  border-radius: 5px;
+  border: 1px solid rgba(18, 7, 6, 0.2);
+  display: block;
+  position: relative;
 	width: 95%;
 	height: 2em;
+  line-height: 2em;
+  text-align: center;
 	margin: auto;
+  overflow: visible;
+}
+
+.action a:before {
+  font-family: 'IconicFill';
+  position: absolute;
+  left: 2em;
 }
 
 .action a[name="start"] {
 	margin-bottom: .3em;
+}
+
+.action a[name="start"]:before {
+  content:'\e047';
+}
+
+.action a[name="end"]:before {
+  content:'\2713';
 }
 
 /* End action buttons */
