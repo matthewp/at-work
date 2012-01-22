@@ -4,13 +4,20 @@
 var Installer = {
 	init: function() {
 		var apps = navigator.apps = navigator.apps || navigator.mozApps;
-		if(apps && !apps.self) { // Not currently installed.
+		if(!apps) {
+      console.log('Open Web Apps not supported.');
+      return;
+    }
+
+    if(!apps.self) { // Not currently installed.
 			var self = this;
 			var btn = document.getElementsByName('install')[0];
 			[ 'touchend', 'mouseup' ].forEach(function(evt) {
 				btn.addEventListener(evt, self);
 			});
-		}
+		} else {
+      console.log('At Work already installed.');
+    }
 	},
 	handleEvent: function(e) {
 		console.log('Triggering install.');
