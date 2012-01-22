@@ -1,3 +1,28 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 body {
   background: white;
 }
+
+/* Action buttons */
+.action {
+	width: 100%;
+}
+
+.action a {
+	display: block;
+	width: 95%;
+	height: 2em;
+	margin: auto;
+}
+
+.action a[name="start"] {
+	margin-bottom: .3em;
+}
+
+/* End action buttons */

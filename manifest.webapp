@@ -1,11 +1,16 @@
 {
+	"version": "1.0",
 	"name": "At Work",
 	"launch_path": "/atwork.html",
+	"description": "Work time tracker for contractors.",
 	"developer": {
 		"name": "Matthew Phillips",
 		"url": "http://www.matthewphillips.info"
 	},
 	"icons": {
-		"120": ""
-	}
+		"16": "",
+		"48": "",
+		"128": ""
+	},
+	"default_locale": "en"
 }

@@ -98,4 +98,4 @@ window.addEventListener('load', function winLoad(e) {
 	Timer.init();
 });
 
-}).call(this);
+})();
