@@ -71,9 +71,13 @@ Timer.prototype = {
 		this.setBtnText("Start");
     this._btn.className = null;
 	},
+  complete: function() {
+    // TODO Save this timer to the database.
+  },
 	update: function() {
 		var ts = this.elapsed;
 		this._elem.innerHTML = ts.toString();
+    this.saveState();
 	},
 	handleEvent: function timerHandle(e) {
     switch(e.type) {
@@ -90,7 +94,7 @@ Timer.prototype = {
 		e.preventDefault();
 	},
 	setBtnText: function(text) {
-		this._btn.innerHTML = text;
+		this._btn.textContent = text;
 	},
 	get elapsed() {
 		if(!this._begin)
@@ -99,11 +103,30 @@ Timer.prototype = {
 		var now = new Date();
 		var ms = now - this._begin;
 		return this.time.add(ms);
-	}
+	},
+  saveState: function() {
+    localStorage['running'] = this.running;
+    localStorage['time'] = this.running ? JSON.stringify(this.time) : null;
+  }
 };
 
 Timer.init = function() {
 	this.timer = new Timer();
+
+  if(localStorage['running'] === 'true') {
+    this.restore();
+  }
+};
+
+Timer.restore = function() {
+  var state = JSON.parse(localStorage['time']);
+  this.timer.running = true;
+  this.timer.time.totalmilliseconds = state.totalmilliseconds;
+  this.timer.time.hours = state.hours;
+  this.timer.time.minutes = state.minutes;
+  this.timer.time.seconds = state.seconds;
+
+  this.timer._elem.innerHTML = this.timer.time.toString();
 };
 
 window.addEventListener('load', function winLoad(e) {
