@@ -56,6 +56,7 @@ Timer.prototype = {
 		this._id = setInterval(this.update.bind(this), 500);
 	
 		this.setBtnText("Stop");
+    this._btn.className = 'started';
 	},
 	stop: function() {
 		this.running = false;
@@ -65,6 +66,7 @@ Timer.prototype = {
 		this.time = this.elapsed;
 
 		this.setBtnText("Start");
+    this._btn.className = null;
 	},
 	update: function() {
 		var ts = this.elapsed;

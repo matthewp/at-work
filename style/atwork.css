@@ -25,6 +25,12 @@ body {
   background: white;
 }
 
+/* Navigation */
+nav {
+  
+}
+/* End navigation */
+
 /* Action buttons */
 .action {
 	width: 100%;
@@ -35,10 +41,11 @@ body {
   border-radius: 5px;
   border: 1px solid rgba(18, 7, 6, 0.2);
   display: block;
+  font-size: 2.2em;
   position: relative;
 	width: 95%;
-	height: 2em;
-  line-height: 2em;
+	height: 60px;
+  line-height: 60px;
   text-align: center;
 	margin: auto;
   overflow: visible;
@@ -47,7 +54,7 @@ body {
 .action a:before {
   font-family: 'IconicFill';
   position: absolute;
-  left: 2em;
+  left: 1em;
 }
 
 .action a[name="start"] {
@@ -58,8 +65,21 @@ body {
   content:'\e047';
 }
 
+.action a.started[name="start"]:before {
+  content:'\e04a'; 
+}
+
 .action a[name="end"]:before {
   content:'\2713';
 }
-
 /* End action buttons */
+
+/* Timer */
+.current-time {
+  width: 100%;
+  text-align: center;
+  font-size: 3em;
+  font-weight: bolder;
+  margin-top: 0.5em;
+}
+/* End Timer */
