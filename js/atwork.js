@@ -45,7 +45,10 @@ function Timer() {
 	this._elem = document.getElementById('current-time');
 	this._btn = document.getElementsByName('start')[0];
 
-	this._btn.addEventListener('click', this);
+  var self = this;
+  [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+	  self._btn.addEventListener(evt, self);
+  });
 }
 
 Timer.prototype = {
@@ -73,8 +76,16 @@ Timer.prototype = {
 		this._elem.innerHTML = ts.toString();
 	},
 	handleEvent: function timerHandle(e) {
-		if(e.type === 'click')
-			this.running ? this.stop() : this.start();
+    switch(e.type) {
+      case 'touchstart':
+      case 'mousedown':
+        this._btn.className += ' clicked';
+        break;
+      case 'touchend':
+      case 'mouseup':
+        this.running ? this.stop() : this.start();
+        break;
+    }
 
 		e.preventDefault();
 	},

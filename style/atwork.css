@@ -32,6 +32,10 @@ nav {
 /* End navigation */
 
 /* Action buttons */
+.clicked {
+  background: #998482 !important;i
+}
+
 .action {
 	width: 100%;
 }
