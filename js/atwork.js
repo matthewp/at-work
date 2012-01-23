@@ -72,12 +72,12 @@ Timer.prototype = {
     this._btn.className = null;
 	},
   complete: function() {
-    // TODO Save this timer to the database.
+    // TODO Save this time to the database.
   },
 	update: function() {
 		var ts = this.elapsed;
 		this._elem.innerHTML = ts.toString();
-    this.saveState();
+    this.saveState(ts);
 	},
 	handleEvent: function timerHandle(e) {
     switch(e.type) {
@@ -104,16 +104,17 @@ Timer.prototype = {
 		var ms = now - this._begin;
 		return this.time.add(ms);
 	},
-  saveState: function() {
-    localStorage['running'] = this.running;
-    localStorage['time'] = this.running ? JSON.stringify(this.time) : null;
+  saveState: function(ts) {
+    localStorage['enabled'] = this.running;
+    var strTime = JSON.stringify(ts);
+    localStorage['time'] = strTime;
   }
 };
 
 Timer.init = function() {
 	this.timer = new Timer();
 
-  if(localStorage['running'] === 'true') {
+  if(localStorage['enabled'] === 'true') {
     this.restore();
   }
 };
