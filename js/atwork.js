@@ -121,7 +121,6 @@ Timer.init = function() {
 
 Timer.restore = function() {
   var state = JSON.parse(localStorage['time']);
-  this.timer.running = true;
   this.timer.time.totalmilliseconds = state.totalmilliseconds;
   this.timer.time.hours = state.hours;
   this.timer.time.minutes = state.minutes;
