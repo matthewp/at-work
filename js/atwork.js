@@ -3,6 +3,27 @@
 
 (function() {
 'use strict';
+const OS_NAME = 'sessions';
+
+window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+
+function openDB(callback) {
+  var req = window.indexedDB.open('atwork', 1);
+
+  req.onerror = function(e) {
+    console.log(e);
+    callback(null);
+  };
+
+  req.onupgradeneeded = function(e) {
+    var os = db.createObjectStore(OS_NAME, { keyPath: "id" });
+  };
+
+  req.onsuccess = function(e) {
+    var db = e.target.result;
+    callback(db);
+  };
+}
 
 function TimeSpan(ms) {
   if(ms) {
@@ -40,6 +61,58 @@ TimeSpan.prototype = {
 
 };
 
+function Session(times) {
+  this.times = times;
+}
+
+Session.prototype = {
+  get totalmilliseconds () {
+    var ms = 0;
+    this.times.forEach(function(time) {
+      ms += time.totalmilliseconds;
+    });
+
+    return ms;
+  },
+
+  get time () {
+    if(this._time)
+      return this._time;
+
+    this._time = new TimeSpan(this.totalmilliseconds);
+  },
+
+  get id () {
+    return this._id;
+  },
+
+  set id (i) {
+    this._id = i;
+  },
+
+  save: function() {
+    // TODO save this session.
+    var now = new Date();
+    this.id = now.getTime();
+
+    openDB(function(db) {
+      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
+            
+      trans.onerror = function(e) {
+        console.log(e);
+      };
+
+      var os = db.objectStore(OS_NAME);
+      os.add(this);
+    });
+  }
+};
+
+Session.getAll = function() {
+  // TODO
+};
+
+
 function Timer() {
   this.time = new TimeSpan();
   this._elem = document.getElementById('current-time');
@@ -72,7 +145,8 @@ Timer.prototype = {
     this._btn.className = null;
   },
   complete: function() {
-    // TODO Save this time to the database.
+    var session = new Session([this.time]);
+    session.save();
   },
   update: function() {
     var ts = this.elapsed;
