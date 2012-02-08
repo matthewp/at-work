@@ -152,6 +152,7 @@ var SessionList = {
 function Timer() {
   this.time = new TimeSpan();
   this._elem = document.getElementById('current-time');
+  this._elem.innerHTML = '';
   this._btn = document.getElementsByName('start')[0];
   this._endBtn = document.getElementsByName('end')[0];
 
@@ -188,6 +189,8 @@ Timer.prototype = {
     SessionList.add(session);
 
     this._endBtn.className = null;
+
+    Timer.reset();
   },
   update: function() {
     var ts = this.elapsed;
@@ -248,6 +251,13 @@ Timer.restore = function() {
   this.timer.time.seconds = state.seconds;
 
   this.timer._elem.innerHTML = this.timer.time.toString();
+};
+
+Timer.reset = function() {
+  this.timer = new Timer();
+
+  localStorage['enabled'] = false;
+  localStorage['time'] = null;
 };
 
 window.addEventListener('load', function winLoad(e) {
