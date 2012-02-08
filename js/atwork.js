@@ -4,11 +4,13 @@
 (function() {
 'use strict';
 const OS_NAME = 'sessions';
+const DB_NAME = 'atwork';
+const DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 
-function openDB(callback) {
-  var req = window.indexedDB.open('atwork', 1);
+function openDB(callback, context) {
+  var req = window.indexedDB.open(DB_NAME, DB_VERSION);
 
   req.onerror = function(e) {
     console.log(e);
@@ -16,12 +18,16 @@ function openDB(callback) {
   };
 
   req.onupgradeneeded = function(e) {
+    var db = e.target.result;
     var os = db.createObjectStore(OS_NAME, { keyPath: "id" });
   };
 
   req.onsuccess = function(e) {
     var db = e.target.result;
-    callback(db);
+    var func = context
+      ? callback.bind(context)
+      : callback;
+    func(db);
   };
 }
 
@@ -102,9 +108,9 @@ Session.prototype = {
         console.log(e);
       };
 
-      var os = db.objectStore(OS_NAME);
+      var os = trans.objectStore(OS_NAME);
       os.add(this);
-    });
+    }, this);
   }
 };
 
@@ -149,6 +155,8 @@ Timer.prototype = {
   complete: function() {
     var session = new Session([this.time]);
     session.save();
+
+    this._endBtn.className = null;
   },
   update: function() {
     var ts = this.elapsed;
@@ -156,21 +164,20 @@ Timer.prototype = {
     this.saveState(ts);
   },
   handleEvent: function timerHandle(e) {
-    if(e.target.name === 'end' &&
-        (e.type === 'touchend' || e.type === 'mouseup')) {
-
-      this.complete();
-      return;
-    }
+    var elem = e.target.name === 'end'
+      ? this._endBtn : this._btn;
 
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        this._btn.className += ' clicked';
+        elem.className += ' clicked';
         break;
       case 'touchend':
       case 'mouseup':
-        this.running ? this.stop() : this.start();
+        if(e.target.name === 'start')
+          this.running ? this.stop() : this.start();
+        else
+          this.complete();
         break;
     }
 
