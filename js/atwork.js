@@ -117,10 +117,12 @@ function Timer() {
   this.time = new TimeSpan();
   this._elem = document.getElementById('current-time');
   this._btn = document.getElementsByName('start')[0];
+  this._endBtn = document.getElementsByName('end')[0];
 
   var self = this;
   [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
     self._btn.addEventListener(evt, self);
+    self._endBtn.addEventListener(evt, self);
   });
 }
 
@@ -154,6 +156,13 @@ Timer.prototype = {
     this.saveState(ts);
   },
   handleEvent: function timerHandle(e) {
+    if(e.target.name === 'end' &&
+        (e.type === 'touchend' || e.type === 'mouseup')) {
+
+      this.complete();
+      return;
+    }
+
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
