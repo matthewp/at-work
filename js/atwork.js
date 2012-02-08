@@ -114,10 +114,40 @@ Session.prototype = {
   }
 };
 
-Session.getAll = function() {
-  // TODO
+Session.getAll = function(callback) {
+  openDB(function(db) {
+    var sessions = [];
+
+    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
+    trans.onerror = function(e) {
+      console.log(e);
+    };
+
+    var os = trans.objectStore(OS_NAME);
+    os.openCursor().onsuccess = function(e) {
+      var cursor = e.target.result;
+      if(!cursor) {
+        callback(sessions);
+        return;
+      }
+
+      sessions.push(cursor.value);
+      cursor.continue();
+    };
+  });
 };
 
+var SessionList = {
+  init: function() {
+    Session.getAll(this.got.bind(this));
+  },
+  got: function(sessions) {
+    this.sessions = sessions;
+  },
+  add: function(session) {
+    this.sessions.push(session);
+  }
+};
 
 function Timer() {
   this.time = new TimeSpan();
@@ -155,6 +185,7 @@ Timer.prototype = {
   complete: function() {
     var session = new Session([this.time]);
     session.save();
+    SessionList.add(session);
 
     this._endBtn.className = null;
   },
@@ -222,6 +253,7 @@ Timer.restore = function() {
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Timer.init();
+  SessionList.init();
 });
 
 })();
