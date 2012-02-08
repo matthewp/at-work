@@ -3,9 +3,9 @@
 
 (function() {
 'use strict';
-const OS_NAME = 'sessions';
-const DB_NAME = 'atwork';
-const DB_VERSION = 1;
+var OS_NAME = 'sessions';
+var DB_NAME = 'atwork';
+var DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 
