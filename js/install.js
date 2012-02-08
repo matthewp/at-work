@@ -5,7 +5,7 @@ var Installer = {
 	init: function() {
 		var apps = navigator.apps = navigator.apps || navigator.mozApps;
 		if(!apps) {
-      console.log('Open Web Apps not supported.');
+      notSupported();
       return;
     }
 
@@ -35,6 +35,15 @@ var Installer = {
 		console.log(e);
 	}
 };
+
+function notSupported() {
+  var link = document.getElementsByName('install')[0];
+  link.style.display = 'none';
+
+  var warn = document.createElement('span');
+  warn.textContent = "Browser doesn't support installation.";
+  document.body.appendChild(warn);
+}
 
 window.addEventListener('load', function winLoad(e) {
 	window.removeEventListener('load', winLoad);
