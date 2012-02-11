@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v1 2012-02-10
+# v1 2012-02-11
 
 CACHE:
 # /
@@ -15,3 +15,16 @@ CACHE:
 /style/atwork.css
 /style/install.css
 
+# /style/fonts
+/style/fonts/iconic_fill.afm
+/style/fonts/iconic_fill.css
+/style/fonts/iconic_fill.eot
+/style/fonts/iconic_fill.otf
+/style/fonts/iconic_fill.svg
+/style/fonts/iconic_fill.ttf
+/style/fonts/iconic_stroke.afm
+/style/fonts/iconic_stroke.css
+/style/fonts/iconic_stroke.eot
+/style/fonts/iconic_stroke.otf
+/style/fonts/iconic_stroke.svg
+/style/fonts/iconic_stroke.ttf
