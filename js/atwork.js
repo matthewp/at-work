@@ -233,6 +233,13 @@ Timer.prototype = {
     localStorage['enabled'] = this.running;
     var strTime = JSON.stringify(ts);
     localStorage['time'] = strTime;
+  },
+  unload: function() {
+    var self = this;
+    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+      self._btn.removeEventListener(evt, self);
+      self._endBtn.removeEventListener(evt, self);
+    });
   }
 };
 
@@ -255,6 +262,7 @@ Timer.restore = function() {
 };
 
 Timer.reset = function() {
+  this.timer.unload();
   this.timer = new Timer();
 
   localStorage['enabled'] = false;
