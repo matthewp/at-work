@@ -1,6 +1,17 @@
 CACHE MANIFEST
-# v1 2012-01-11
+# v1 2012-02-10
 
+CACHE:
 # /
-atwork.html
-manifest.webapp
+/atwork.html
+/install.html
+/manifest.webapp
+
+# /js
+/js/atwork.js
+/js/install.js
+
+# /style
+/style/atwork.css
+/style/install.css
+
