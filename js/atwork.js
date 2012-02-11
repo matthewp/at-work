@@ -8,6 +8,7 @@ var DB_NAME = 'atwork';
 var DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
 
 function openDB(callback, context) {
   var req = window.indexedDB.open(DB_NAME, DB_VERSION);
