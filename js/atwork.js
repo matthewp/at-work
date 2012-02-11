@@ -3,6 +3,34 @@
 
 (function() {
 'use strict';
+var OS_NAME = 'sessions';
+var DB_NAME = 'atwork';
+var DB_VERSION = 1;
+
+window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+
+function openDB(callback, context) {
+  var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+
+  req.onerror = function(e) {
+    console.log(e);
+    callback(null);
+  };
+
+  req.onupgradeneeded = function(e) {
+    var db = e.target.result;
+    var os = db.createObjectStore(OS_NAME, { keyPath: "id" });
+  };
+
+  req.onsuccess = function(e) {
+    var db = e.target.result;
+    var func = context
+      ? callback.bind(context)
+      : callback;
+    func(db);
+  };
+}
 
 function TimeSpan(ms) {
   if(ms) {
@@ -40,14 +68,99 @@ TimeSpan.prototype = {
 
 };
 
+function Session(times) {
+  this.times = times;
+}
+
+Session.prototype = {
+  get totalmilliseconds () {
+    var ms = 0;
+    this.times.forEach(function(time) {
+      ms += time.totalmilliseconds;
+    });
+
+    return ms;
+  },
+
+  get time () {
+    if(this._time)
+      return this._time;
+
+    this._time = new TimeSpan(this.totalmilliseconds);
+  },
+
+  get id () {
+    return this._id;
+  },
+
+  set id (i) {
+    this._id = i;
+  },
+
+  save: function() {
+    // TODO save this session.
+    var now = new Date();
+    this.id = now.getTime();
+
+    openDB(function(db) {
+      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
+            
+      trans.onerror = function(e) {
+        console.log(e);
+      };
+
+      var os = trans.objectStore(OS_NAME);
+      os.add(this);
+    }, this);
+  }
+};
+
+Session.getAll = function(callback) {
+  openDB(function(db) {
+    var sessions = [];
+
+    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
+    trans.onerror = function(e) {
+      console.log(e);
+    };
+
+    var os = trans.objectStore(OS_NAME);
+    os.openCursor().onsuccess = function(e) {
+      var cursor = e.target.result;
+      if(!cursor) {
+        callback(sessions);
+        return;
+      }
+
+      sessions.push(cursor.value);
+      cursor.continue();
+    };
+  });
+};
+
+var SessionList = {
+  init: function() {
+    Session.getAll(this.got.bind(this));
+  },
+  got: function(sessions) {
+    this.sessions = sessions;
+  },
+  add: function(session) {
+    this.sessions.push(session);
+  }
+};
+
 function Timer() {
   this.time = new TimeSpan();
   this._elem = document.getElementById('current-time');
+  this._elem.innerHTML = '';
   this._btn = document.getElementsByName('start')[0];
+  this._endBtn = document.getElementsByName('end')[0];
 
   var self = this;
   [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
     self._btn.addEventListener(evt, self);
+    self._endBtn.addEventListener(evt, self);
   });
 }
 
@@ -72,7 +185,13 @@ Timer.prototype = {
     this._btn.className = null;
   },
   complete: function() {
-    // TODO Save this time to the database.
+    var session = new Session([this.time]);
+    session.save();
+    SessionList.add(session);
+
+    this._endBtn.className = null;
+
+    Timer.reset();
   },
   update: function() {
     var ts = this.elapsed;
@@ -80,14 +199,20 @@ Timer.prototype = {
     this.saveState(ts);
   },
   handleEvent: function timerHandle(e) {
+    var elem = e.target.name === 'end'
+      ? this._endBtn : this._btn;
+
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        this._btn.className += ' clicked';
+        elem.className += ' clicked';
         break;
       case 'touchend':
       case 'mouseup':
-        this.running ? this.stop() : this.start();
+        if(e.target.name === 'start')
+          this.running ? this.stop() : this.start();
+        else
+          this.complete();
         break;
     }
 
@@ -129,9 +254,17 @@ Timer.restore = function() {
   this.timer._elem.innerHTML = this.timer.time.toString();
 };
 
+Timer.reset = function() {
+  this.timer = new Timer();
+
+  localStorage['enabled'] = false;
+  localStorage['time'] = null;
+};
+
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Timer.init();
+  SessionList.init();
 });
 
 })();
