@@ -3,9 +3,9 @@
 
 (function() {
 'use strict';
-var OS_NAME = 'sessions';
-var DB_NAME = 'atwork';
-var DB_VERSION = 1;
+var OS_NAME = 'sessions',
+    DB_NAME = 'atwork',
+    DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
@@ -15,7 +15,6 @@ function openDB(callback, context) {
 
   req.onerror = function(e) {
     console.log(e);
-    callback(null);
   };
 
   req.onupgradeneeded = function(e) {
