@@ -3,9 +3,9 @@
 
 (function() {
 'use strict';
-var OS_NAME = 'sessions';
-var DB_NAME = 'atwork';
-var DB_VERSION = 1;
+var OS_NAME = 'sessions',
+    DB_NAME = 'atwork',
+    DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;

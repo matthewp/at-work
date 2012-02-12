@@ -27,7 +27,35 @@ body {
 
 /* Navigation */
 nav {
-  
+
+}
+
+nav #active {
+  position: absolute;
+  background: #993333;
+  height: .3em;
+  width: 50%;
+}
+
+nav #active.left {
+  left: 0%;
+}
+
+nav #active.right {
+  left: 50%;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  margin-bottom: 5px;
+}
+
+nav ul li {
+  display: inline-block;
+  border-bottom: .1em solid #B8B8B8;
+  width: 49%;
 }
 /* End navigation */
 
