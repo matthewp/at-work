@@ -5,7 +5,8 @@
 'use strict';
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1;
+    DB_VERSION = 1,
+    Work, Log;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
@@ -98,7 +99,6 @@ Session.prototype = {
   },
 
   save: function() {
-    // TODO save this session.
     var now = new Date();
     this.id = now.getTime();
 
@@ -269,11 +269,11 @@ Timer.reset = function() {
   localStorage['time'] = null;
 };
 
-function Nav() {
-
+function Button(elem) {
+  this.elem = elem;
 }
 
-Nav.prototype = {
+Button.prototype = {
   listen: function() {
     [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
       this.elem.addEventListener(evt, this);
@@ -286,24 +286,60 @@ Nav.prototype = {
     });
   },
 
+  down: function() { },
+  up: function() { },
+
   handleEvent: function(e) {
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        // TODO
+        // TODO Colors
+        this.down();
         break;
       case 'touchend':
       case 'mouseup':
-        // TODO
+        // TODO Colors
+        this.up();
         break;
     }
   }
 };
 
+var Section = {
+  init: function() {
+    this.elem = document.getElementById('active');
+  },
+
+  left: function() {
+    this.elem.className = 'left';
+  },
+
+  right: function() {
+    this.elem.className = 'right';
+  }
+};
+
+Work = Object.create(Button.prototype, {
+  up: function() {
+    // TODO show work page.
+    Section.left();
+  }
+});
+
+Log = Object.create(Button.prototype, {
+  up: function() {
+    // TODO Show log page.
+    Section.right();
+  }
+});
+
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Timer.init();
   SessionList.init();
+  Section.init();
+  new Work(document.getElementById('work'));
+  new Log(document.getElementById('log'));
 });
 
 })();
