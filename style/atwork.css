@@ -36,7 +36,11 @@ nav #active {
   height: .3em;
   width: 50%;
 
+  transition: all .25s ease-in-out;
   -webkit-transition: all .25s ease-in-out;
+  -moz-transition: all .25s ease-in-out;
+  -o-transition: all .25s ease-in-out;
+  -ms-transition: all .25s ease-in-out;
 }
 
 nav #active.left {
