@@ -25,6 +25,18 @@ function openDB(callback, context) {
 
   req.onsuccess = function(e) {
     var db = e.target.result;
+
+    if(db.setVersion && db.version != DB_VERSION) {
+      var verReq = db.setVersion(DB_VERSION);
+      verReq.onfailure = req.onerror;
+      verReq.onsuccess = function() {
+        req.onupgradeneeded(e);
+        openDB(callback, context);
+      };
+
+      return;
+    }
+
     var func = context
       ? callback.bind(context)
       : callback;
