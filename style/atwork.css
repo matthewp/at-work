@@ -35,6 +35,8 @@ nav #active {
   background: #993333;
   height: .3em;
   width: 50%;
+
+  -webkit-transition: all .25s ease-in-out;
 }
 
 nav #active.left {
