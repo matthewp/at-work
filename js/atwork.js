@@ -5,8 +5,7 @@
 'use strict';
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1,
-    Work, Log;
+    DB_VERSION = 1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
@@ -275,14 +274,16 @@ function Button(elem) {
 
 Button.prototype = {
   listen: function() {
+    var self = this;
     [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-      this.elem.addEventListener(evt, this);
+      self.elem.addEventListener(evt, self);
     });
   },
 
   unload: function() {
+    var self = this;
     [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-      this.elem.removeEventListener(evt, this);
+      self.elem.removeEventListener(evt, self);
     });
   },
 
@@ -319,27 +320,35 @@ var Section = {
   }
 };
 
-Work = Object.create(Button.prototype, {
-  up: function() {
-    // TODO show work page.
-    Section.left();
-  }
-});
+function Work() {
+  this.elem = document.getElementById('work');
+}
+Work.prototype = Object.create(Button.prototype);
+Work.prototype.constructor = Work;
+Work.prototype.up = function() {
+  // TODO show work page.
+  Section.left();
+};
 
-Log = Object.create(Button.prototype, {
-  up: function() {
-    // TODO Show log page.
-    Section.right();
-  }
-});
+function Log() {
+  this.elem = document.getElementById('log');
+}
+Log.prototype = Object.create(Button.prototype);
+Log.prototype.constructor = Log;
+Log.prototype.up = function() {
+  // TODO show log page.
+  Section.right();
+};
 
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Timer.init();
   SessionList.init();
   Section.init();
-  new Work(document.getElementById('work'));
-  new Log(document.getElementById('log'));
+  var work = new Work();
+  work.listen();
+  var log = new Log();
+  log.listen();
 });
 
 })();
