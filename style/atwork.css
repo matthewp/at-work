@@ -45,17 +45,30 @@ nav #active.right {
   left: 50%;
 }
 
-nav ul {
-  list-style: none;
+nav div#buttons {
+  border-bottom: .1em solid #B8B8B8;
   padding: 0;
   margin: 0 auto;
   margin-bottom: 5px;
 }
 
-nav ul li {
+nav div#buttons span {
   display: inline-block;
-  border-bottom: .1em solid #B8B8B8;
-  width: 49%;
+  margin: 0;
+  padding: 0;
+  font-size: 2em;
+  text-align: center;
+  line-height: 2em;
+  height: 2em;
+  width: 49.6%;
+}
+
+nav div#buttons span:nth-child(2) {
+  background: #B8B8B8;
+  position: absolute;
+  height: 1.2em;
+  top: .4em;
+  width: .06em;
 }
 /* End navigation */
 
