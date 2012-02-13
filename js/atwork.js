@@ -269,6 +269,37 @@ Timer.reset = function() {
   localStorage['time'] = null;
 };
 
+function Nav() {
+
+}
+
+Nav.prototype = {
+  listen: function() {
+    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+      this.elem.addEventListener(evt, this);
+    });
+  },
+
+  unload: function() {
+    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+      this.elem.removeEventListener(evt, this);
+    });
+  },
+
+  handleEvent: function(e) {
+    switch(e.type) {
+      case 'touchstart':
+      case 'mousedown':
+        // TODO
+        break;
+      case 'touchend':
+      case 'mouseup':
+        // TODO
+        break;
+    }
+  }
+};
+
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Timer.init();
