@@ -353,6 +353,15 @@ var Section = {
   }
 };
 
+function Start() {
+  this.elem = document.getElementsByName('start')[0];
+}
+Start.prototype = Object.create(Button.prototype);
+Start.prototype.constructor = Start;
+Start.prototype.up = function() {
+
+}
+
 function Work() {
   this.elem = document.getElementById('work');
 }
