@@ -1,6 +1,4 @@
-/* -*- Mode: Java; tab-width: 2; indent-tabs-mode: nil; c-basic-offset: 2 -*- /
 /* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
-
 (function() {
 'use strict';
 var OS_NAME = 'sessions',
@@ -44,6 +42,16 @@ function openDB(callback, context) {
   };
 }
 
+function extends(parent, proto) {
+  var base = Object.create(parent);
+
+  Object.keys(proto).forEach(function(key) {
+    base[key] = proto[key];
+  });
+
+  return base;
+}
+
 function TimeSpan(ms) {
   if(ms) {
     this.totalmilliseconds = ms;
@@ -78,102 +86,6 @@ TimeSpan.prototype = {
     return num;
   }
 
-};
-
-function Session(times) {
-  this.times = times;
-}
-
-Session.prototype = {
-  get totalmilliseconds () {
-    var ms = 0;
-    this.times.forEach(function(time) {
-      ms += time.totalmilliseconds;
-    });
-
-    return ms;
-  },
-
-  get time () {
-    if(this._time)
-      return this._time;
-
-    this._time = new TimeSpan(this.totalmilliseconds);
-    return this._time;
-  },
-
-  id: 0,
-
-  save: function() {
-    var now = new Date();
-    this.id = now.getTime();
-
-    openDB(function(db) {
-      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
-            
-      trans.onerror = function(e) {
-        console.log(e);
-      };
-
-      var os = trans.objectStore(OS_NAME);
-      os.add(this);
-    }, this);
-  }
-};
-
-Session.getAll = function(callback) {
-  openDB(function(db) {
-    var sessions = [];
-
-    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
-    trans.onerror = function(e) {
-      console.log(e);
-    };
-
-    var os = trans.objectStore(OS_NAME);
-    os.openCursor().onsuccess = function(e) {
-      var cursor = e.target.result;
-      if(!cursor) {
-        callback(sessions);
-        return;
-      }
-
-      sessions.push(cursor.value);
-      cursor.continue();
-    };
-  });
-};
-
-var SessionList = {
-  init: function() {
-    this.sessions = [];
-    this.base = document.getElementById('main');
-
-    Session.getAll(this.got.bind(this));
-  },
-  got: function(sessions) {
-    this.sessions = sessions;
-  },
-  add: function(session) {
-    this.sessions.push(session);
-  },
-  show: function() {
-    var base = this.base;
-    base.innerHTML = '';
-
-    var ul = document.createElement('ul');
-    ul.className = 'sessions';
-
-    this.sessions.forEach(function(session) {
-      var li = document.createElement('li');
-      li.id = session.id;
-      li.textContent = session.time.toString();
-
-      ul.appendChild(li);
-    });
-
-    base.appendChild(ul);
-  }
 };
 
 function Timer() {
@@ -295,6 +207,89 @@ Timer.reset = function() {
   localStorage['time'] = null;
 };
 
+function Session(times) {
+  this.times = times;
+}
+
+Session.prototype = {
+  get totalmilliseconds () {
+    var ms = 0;
+    this.times.forEach(function(time) {
+      ms += time.totalmilliseconds;
+    });
+
+    return ms;
+  },
+
+  get time () {
+    if(this._time)
+      return this._time;
+
+    this._time = new TimeSpan(this.totalmilliseconds);
+    return this._time;
+  },
+
+  id: 0,
+
+  save: function() {
+    var now = new Date();
+    this.id = now.getTime();
+
+    openDB(function(db) {
+      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
+            
+      trans.onerror = function(e) {
+        console.log(e);
+      };
+
+      var os = trans.objectStore(OS_NAME);
+      os.add(this);
+    }, this);
+  }
+};
+
+Session.getAll = function(callback) {
+  openDB(function(db) {
+    var sessions = [];
+
+    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
+    trans.onerror = function(e) {
+      console.log(e);
+    };
+
+
+var SessionList = {
+  init: function() {
+    this.sessions = [];
+    this.base = document.getElementById('main');
+
+    Session.getAll(this.got.bind(this));
+  },
+  got: function(sessions) {
+    this.sessions = sessions;
+  },
+  add: function(session) {
+    this.sessions.push(session);
+  },
+  show: function() {
+    var base = this.base;
+    base.innerHTML = '';
+
+    var ul = document.createElement('ul');
+    ul.className = 'sessions';
+
+    this.sessions.forEach(function(session) {
+      var li = document.createElement('li');
+      li.id = session.id;
+      li.textContent = session.time.toString();
+
+      ul.appendChild(li);
+    });
+
+    base.appendChild(ul);
+  }
+};
+
 function Button(elem) {
   this.elem = elem;
 }
@@ -353,34 +348,39 @@ var Section = {
   }
 };
 
-function Start() {
-  this.elem = document.getElementsByName('start')[0];
-}
-Start.prototype = Object.create(Button.prototype);
-Start.prototype.constructor = Start;
-Start.prototype.up = function() {
-
-}
-
 function Work() {
   this.elem = document.getElementById('work');
+  this.timer = new Timer();
 }
-Work.prototype = Object.create(Button.prototype);
-Work.prototype.constructor = Work;
-Work.prototype.up = function() {
-  // TODO show work page.
-  Section.left();
-};
+
+Work.prototype = extends(Button, {
+  up: function() {
+    var self = this;
+
+    // TODO show work page.
+
+
+    Section.left();
+  }
+});
 
 function Log() {
   this.elem = document.getElementById('log');
 }
-Log.prototype = Object.create(Button.prototype);
-Log.prototype.constructor = Log;
-Log.prototype.up = function() {
-  SessionList.show();
-  Section.right();
-};
+
+Log.prototype = extends(Button, {
+  up: function() {
+    SessionList.show();
+    Section.right();
+  }
+});
+
+function Start() {
+  this.elem = document.getElementsByName('start')[0];
+}
+
+Start.prototype = extends(Button, {
+});
 
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
