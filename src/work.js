@@ -3,7 +3,7 @@ function Work() {
   this.timer = new Timer();
 }
 
-Work.prototype = extends(Button, {
+Work.prototype = extend(Button, {
   up: function() {
     var self = this;
 

@@ -1,4 +1,3 @@
-/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
 (function() {
 'use strict';
 var OS_NAME = 'sessions',
@@ -42,7 +41,7 @@ function openDB(callback, context) {
   };
 }
 
-function extends(parent, proto) {
+function extend(parent, proto) {
   var base = Object.create(parent);
 
   Object.keys(proto).forEach(function(key) {
@@ -353,7 +352,7 @@ function Work() {
   this.timer = new Timer();
 }
 
-Work.prototype = extends(Button, {
+Work.prototype = extend(Button, {
   up: function() {
     var self = this;
 
@@ -368,7 +367,7 @@ function Log() {
   this.elem = document.getElementById('log');
 }
 
-Log.prototype = extends(Button, {
+Log.prototype = extend(Button, {
   up: function() {
     SessionList.show();
     Section.right();
@@ -379,7 +378,7 @@ function Start() {
   this.elem = document.getElementsByName('start')[0];
 }
 
-Start.prototype = extends(Button, {
+Start.prototype = extend(Button, {
 });
 
 window.addEventListener('load', function winLoad(e) {
