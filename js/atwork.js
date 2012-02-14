@@ -108,7 +108,7 @@ Timer.prototype = {
   start: function() {
     this.running = true;
     this._begin = new Date();
-    this._id = setInterval(this.update.bind(this), 500);
+    this._id = setInterval(this.update, 500);
   
     this.setBtnText("Stop");
     this._btn.className = 'started';
@@ -132,11 +132,7 @@ Timer.prototype = {
 
     Timer.reset();
   },
-  update: function() {
-    var ts = this.elapsed;
-    this._elem.innerHTML = ts.toString();
-    this.saveState(ts);
-  },
+ 
   handleEvent: function timerHandle(e) {
     var elem = e.target.name === 'end'
       ? this._endBtn : this._btn;
@@ -167,11 +163,6 @@ Timer.prototype = {
     var now = new Date();
     var ms = now - this._begin;
     return this.time.add(ms);
-  },
-  saveState: function(ts) {
-    localStorage['enabled'] = this.running;
-    var strTime = JSON.stringify(ts);
-    localStorage['time'] = strTime;
   },
   unload: function() {
     var self = this;
@@ -369,11 +360,8 @@ function Work() {
 
 Work.prototype = extend(Button, {
   up: function() {
-    var self = this;
-
     // TODO show work page.
-
-
+    
     Section.left();
   }
 });
