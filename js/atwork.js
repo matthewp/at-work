@@ -1,3 +1,5 @@
+/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */
+
 (function() {
 'use strict';
 var OS_NAME = 'sessions',
@@ -42,7 +44,7 @@ function openDB(callback, context) {
 }
 
 function extend(parent, proto) {
-  var base = Object.create(parent);
+  var base = Object.create(parent.prototype);
 
   Object.keys(proto).forEach(function(key) {
     base[key] = proto[key];
@@ -256,6 +258,19 @@ Session.getAll = function(callback) {
       console.log(e);
     };
 
+    var os = trans.objectStore(OS_NAME);
+    os.openCursor().onsuccess = function(e) {
+      var cursor = e.target.result;
+      if(!cursor) {
+        callback(sessions);
+        return;
+      }
+
+      sessions.push(cursor.value);
+      cursor.continue();
+    };
+  });
+};
 
 var SessionList = {
   init: function() {

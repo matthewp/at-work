@@ -48,3 +48,16 @@ Session.getAll = function(callback) {
       console.log(e);
     };
 
+    var os = trans.objectStore(OS_NAME);
+    os.openCursor().onsuccess = function(e) {
+      var cursor = e.target.result;
+      if(!cursor) {
+        callback(sessions);
+        return;
+      }
+
+      sessions.push(cursor.value);
+      cursor.continue();
+    };
+  });
+};
