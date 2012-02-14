@@ -99,15 +99,10 @@ Session.prototype = {
       return this._time;
 
     this._time = new TimeSpan(this.totalmilliseconds);
+    return this._time;
   },
 
-  get id () {
-    return this._id;
-  },
-
-  set id (i) {
-    this._id = i;
-  },
+  id: 0,
 
   save: function() {
     var now = new Date();
@@ -151,6 +146,9 @@ Session.getAll = function(callback) {
 
 var SessionList = {
   init: function() {
+    this.sessions = [];
+    this.base = document.getElementById('main');
+
     Session.getAll(this.got.bind(this));
   },
   got: function(sessions) {
@@ -158,6 +156,23 @@ var SessionList = {
   },
   add: function(session) {
     this.sessions.push(session);
+  },
+  show: function() {
+    var base = this.base;
+    base.innerHTML = '';
+
+    var ul = document.createElement('ul');
+    ul.className = 'sessions';
+
+    this.sessions.forEach(function(session) {
+      var li = document.createElement('li');
+      li.id = session.id;
+      li.textContent = session.time.toString();
+
+      ul.appendChild(li);
+    });
+
+    base.appendChild(ul);
   }
 };
 
@@ -285,16 +300,22 @@ function Button(elem) {
 }
 
 Button.prototype = {
+  events: function(action) {
+    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+      action(evt);
+    });
+  },
+
   listen: function() {
     var self = this;
-    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+    self.events(function(evt) {
       self.elem.addEventListener(evt, self);
     });
   },
 
   unload: function() {
     var self = this;
-    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
+    self.events(function(evt) {
       self.elem.removeEventListener(evt, self);
     });
   },
@@ -348,7 +369,7 @@ function Log() {
 Log.prototype = Object.create(Button.prototype);
 Log.prototype.constructor = Log;
 Log.prototype.up = function() {
-  // TODO show log page.
+  SessionList.show();
   Section.right();
 };
 
@@ -357,10 +378,8 @@ window.addEventListener('load', function winLoad(e) {
   Timer.init();
   SessionList.init();
   Section.init();
-  var work = new Work();
-  work.listen();
-  var log = new Log();
-  log.listen();
+  (new Work()).listen();
+  (new Log()).listen();
 });
 
 })();
