@@ -37,5 +37,7 @@ Button.prototype = {
         this.up();
         break;
     }
+
+    e.preventDefault();
   }
 };

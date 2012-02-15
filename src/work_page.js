@@ -7,6 +7,11 @@ var WorkPage = {
 
     if(!this.timer)
       this.timer = new Timer();
+
+    if(localStorage['enabled'] === 'true') {
+      this.restore();
+    }
+
     this.id = setInterval(this.update.bind(this), 500);
 
     this.start = new Start();
@@ -14,6 +19,28 @@ var WorkPage = {
 
   pause: function() {
     clearInterval(this.id);
+  },
+
+  reset: function() {
+    this.timer = new Timer();
+
+    localStorage['enabled'] = false;
+    localStorage['time'] = null;
+  },
+
+  restore: function() {
+    var state = JSON.parse(localStorage['time']);
+    this.timer.time.totalmilliseconds = state.totalmilliseconds;
+    this.timer.time.hours = state.hours;
+    this.timer.time.minutes = state.minutes;
+    this.timer.time.seconds = state.seconds;
+  },
+
+  saveSession: function() {
+    var time = this.timer.time;
+    var session = new Session([time]);
+    session.save();
+    SessionList.add(session);
   },
 
   saveState: function(ts) {

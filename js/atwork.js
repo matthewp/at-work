@@ -91,112 +91,28 @@ TimeSpan.prototype = {
 
 function Timer() {
   this.time = new TimeSpan();
-  this._elem = document.getElementById('current-time');
-  this._elem.innerHTML = '';
-  this._btn = document.getElementsByName('start')[0];
-  this._endBtn = document.getElementsByName('end')[0];
-
-  var self = this;
-  [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-    self._btn.addEventListener(evt, self);
-    self._endBtn.addEventListener(evt, self);
-  });
 }
 
 Timer.prototype = {
   running: false,
   start: function() {
     this.running = true;
-    this._begin = new Date();
-    this._id = setInterval(this.update, 500);
-  
-    this.setBtnText("Stop");
-    this._btn.className = 'started';
+    this.begin = new Date();  
   },
+
   stop: function() {
     this.running = false;
-    clearInterval(this._id);
-    this._id = null;
-
     this.time = this.elapsed;
-
-    this.setBtnText("Start");
-    this._btn.className = null;
   },
-  complete: function() {
-    var session = new Session([this.time]);
-    session.save();
-    SessionList.add(session);
 
-    this._endBtn.className = null;
-
-    Timer.reset();
-  },
- 
-  handleEvent: function timerHandle(e) {
-    var elem = e.target.name === 'end'
-      ? this._endBtn : this._btn;
-
-    switch(e.type) {
-      case 'touchstart':
-      case 'mousedown':
-        elem.className += ' clicked';
-        break;
-      case 'touchend':
-      case 'mouseup':
-        if(e.target.name === 'start')
-          this.running ? this.stop() : this.start();
-        else
-          this.complete();
-        break;
-    }
-
-    e.preventDefault();
-  },
-  setBtnText: function(text) {
-    this._btn.textContent = text;
-  },
   get elapsed() {
-    if(!this._begin)
+    if(!this.begin)
       return NaN;
 
     var now = new Date();
-    var ms = now - this._begin;
+    var ms = now - this.begin;
     return this.time.add(ms);
-  },
-  unload: function() {
-    var self = this;
-    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-      self._btn.removeEventListener(evt, self);
-      self._endBtn.removeEventListener(evt, self);
-    });
   }
-};
-
-Timer.init = function() {
-  this.timer = new Timer();
-
-  if(localStorage['enabled'] === 'true') {
-    this.restore();
-  }
-};
-
-Timer.restore = function() {
-  var state = JSON.parse(localStorage['time']);
-  this.timer.time.totalmilliseconds = state.totalmilliseconds;
-  this.timer.time.hours = state.hours;
-  this.timer.time.minutes = state.minutes;
-  this.timer.time.seconds = state.seconds;
-
-  this.timer._elem.innerHTML = this.timer.time.toString();
-};
-
-Timer.reset = function() {
-  this.timer.unload();
-  this.timer = new Timer();
-
-  localStorage['enabled'] = false;
-  localStorage['time'] = null;
 };
 
 function Session(times) {
@@ -295,6 +211,73 @@ var SessionList = {
   }
 };
 
+var WorkPage = {
+  init: function() {
+    this.elem = document.getElementById('current-time');
+
+    if(this.start)
+      this.start.unload();
+
+    if(!this.timer)
+      this.timer = new Timer();
+
+    if(localStorage['enabled'] === 'true') {
+      this.restore();
+    }
+
+    this.id = setInterval(this.update.bind(this), 500);
+
+    this.start = new Start();
+  },
+
+  pause: function() {
+    clearInterval(this.id);
+  },
+
+  reset: function() {
+    this.timer = new Timer();
+
+    localStorage['enabled'] = false;
+    localStorage['time'] = null;
+  },
+
+  restore: function() {
+    var state = JSON.parse(localStorage['time']);
+    this.timer.time.totalmilliseconds = state.totalmilliseconds;
+    this.timer.time.hours = state.hours;
+    this.timer.time.minutes = state.minutes;
+    this.timer.time.seconds = state.seconds;
+  },
+
+  saveSession: function() {
+    var time = this.timer.time;
+    var session = new Session([time]);
+    session.save();
+    SessionList.add(session);
+  },
+
+  saveState: function(ts) {
+    localStorage['enabled'] = this.timer.running;
+    var strTime = JSON.stringify(ts);
+    localStorage['time'] = strTime;
+  },
+
+  startPressed: function() {
+    this.timer.running ? this.timer.stop() : this.timer.start();
+  },
+
+  unload: function() {
+    this.start.unload();
+  },
+
+  update: function() {
+    var ts = this.timer.elapsed;
+
+    this.elem.textContent = ts.toString();
+    this.saveState(ts);
+  }
+};
+
 function Button(elem) {
   this.elem = elem;
 }
@@ -327,15 +310,15 @@ Button.prototype = {
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        // TODO Colors
         this.down();
         break;
       case 'touchend':
       case 'mouseup':
-        // TODO Colors
         this.up();
         break;
     }
+
+    e.preventDefault();
   }
 };
 
@@ -355,13 +338,11 @@ var Section = {
 
 function Work() {
   this.elem = document.getElementById('work');
-  this.timer = new Timer();
 }
 
 Work.prototype = extend(Button, {
   up: function() {
-    // TODO show work page.
-    
+    WorkPage.init();    
     Section.left();
   }
 });
@@ -372,6 +353,8 @@ function Log() {
 
 Log.prototype = extend(Button, {
   up: function() {
+    WorkPage.pause();  
+
     SessionList.show();
     Section.right();
   }
@@ -382,13 +365,34 @@ function Start() {
 }
 
 Start.prototype = extend(Button, {
+  down: function() {
+    this.elem.className += ' clicked';
+  },
+
+  setBtnText: function(text) {
+    this.elem.textContent = text;
+  },
+
+  start: function() {
+    this.setBtnText("Stop");
+    this.elem.className = 'started';
+  },
+
+  stop: function() {
+    this.setBtnText("Start");
+    this.elem.className = null;
+  },
+
+  up: function() {
+    WorkPage.startPressed();
+  }
 });
 
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
-  Timer.init();
-  SessionList.init();
   Section.init();
+  WorkPage.init();
+  SessionList.init();
   (new Work()).listen();
   (new Log()).listen();
 });

@@ -4,6 +4,8 @@ function Log() {
 
 Log.prototype = extend(Button, {
   up: function() {
+    WorkPage.pause();  
+
     SessionList.show();
     Section.right();
   }
