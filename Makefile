@@ -14,6 +14,7 @@ modules = src/database.js\
           src/work.js\
           src/log.js\
           src/start.js\
+          src/complete.js\
           src/page_load.js
 
 js/atwork.js: ${modules}
