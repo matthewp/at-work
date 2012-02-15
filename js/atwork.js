@@ -224,11 +224,12 @@ var WorkPage = {
     if(localStorage['enabled'] === 'true') {
       this.restore();
     }
-
-    this.id = setInterval(this.update.bind(this), 500);
-
+    
     this.start = new Start();
+    this.start.listen();
+
     this.complete = new Complete();
+    this.complete.listen();
   },
 
   pause: function() {
@@ -255,6 +256,7 @@ var WorkPage = {
     var session = new Session([time]);
     session.save();
     SessionList.add(session);
+    this.reset();
   },
 
   saveState: function(ts) {
@@ -264,7 +266,17 @@ var WorkPage = {
   },
 
   startPressed: function() {
-    this.timer.running ? this.timer.stop() : this.timer.start();
+    if(this.timer.running) {
+      this.timer.stop();
+      this.start.stop();
+      this.pause();
+
+      return;
+    }
+
+    this.timer.start();
+    this.start.start();
+    this.id = setInterval(this.update.bind(this), 500);
   },
 
   show: function() {
@@ -414,16 +426,17 @@ Start.prototype = extend(Button, {
   },
 
   up: function() {
+    this.elem.className = this.elem.className.replace(' clicked', '');
     WorkPage.startPressed();
   }
 });
 
 function Complete() {
-  this.elem = document.getElementsByName('complete')[0];
+  this.elem = document.getElementsByName('end')[0];
 }
 
 Complete.prototype = extend(Button, {
-  down: function() [
+  down: function() {
     this.elem.className += ' clicked';
   },
 

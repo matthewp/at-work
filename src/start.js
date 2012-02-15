@@ -22,6 +22,7 @@ Start.prototype = extend(Button, {
   },
 
   up: function() {
+    this.elem.className = this.elem.className.replace(' clicked', '');
     WorkPage.startPressed();
   }
 });

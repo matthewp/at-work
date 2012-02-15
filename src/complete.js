@@ -1,9 +1,9 @@
 function Complete() {
-  this.elem = document.getElementsByName('complete')[0];
+  this.elem = document.getElementsByName('end')[0];
 }
 
 Complete.prototype = extend(Button, {
-  down: function() [
+  down: function() {
     this.elem.className += ' clicked';
   },
 
