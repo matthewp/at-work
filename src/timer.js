@@ -3,6 +3,10 @@ function Timer() {
 }
 
 Timer.prototype = {
+  resume: function() {
+    this.running = true;
+  },
+
   running: false,
   start: function() {
     this.running = true;
