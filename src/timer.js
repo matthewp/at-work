@@ -1,7 +1,5 @@
 function Timer() {
   this.time = new TimeSpan();
-  this._elem = document.getElementById('current-time');
-  this._elem.innerHTML = '';
   this._btn = document.getElementsByName('start')[0];
   this._endBtn = document.getElementsByName('end')[0];
 
@@ -52,9 +50,7 @@ Timer.prototype = {
 
     e.preventDefault();
   },
-  setBtnText: function(text) {
-    this._btn.textContent = text;
-  },
+
   get elapsed() {
     if(!this.begin)
       return NaN;
@@ -86,8 +82,6 @@ Timer.restore = function() {
   this.timer.time.hours = state.hours;
   this.timer.time.minutes = state.minutes;
   this.timer.time.seconds = state.seconds;
-
-  this.timer._elem.innerHTML = this.timer.time.toString();
 };
 
 Timer.reset = function() {

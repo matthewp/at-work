@@ -30,12 +30,10 @@ Button.prototype = {
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        // TODO Colors
         this.down();
         break;
       case 'touchend':
       case 'mouseup':
-        // TODO Colors
         this.up();
         break;
     }

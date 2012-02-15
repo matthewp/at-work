@@ -10,7 +10,6 @@ var WorkPage = {
     this.id = setInterval(this.update.bind(this), 500);
 
     this.start = new Start();
-    this.start.up = this.startPressed;
   },
 
   pause: function() {
