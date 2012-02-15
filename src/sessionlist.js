@@ -5,12 +5,15 @@ var SessionList = {
 
     Session.getAll(this.got.bind(this));
   },
+
   got: function(sessions) {
     this.sessions = sessions;
   },
+
   add: function(session) {
     this.sessions.push(session);
   },
+
   show: function() {
     var base = this.base;
     base.innerHTML = '';

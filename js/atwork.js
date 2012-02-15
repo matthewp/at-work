@@ -186,12 +186,15 @@ var SessionList = {
 
     Session.getAll(this.got.bind(this));
   },
+
   got: function(sessions) {
     this.sessions = sessions;
   },
+
   add: function(session) {
     this.sessions.push(session);
   },
+
   show: function() {
     var base = this.base;
     base.innerHTML = '';
@@ -215,9 +218,6 @@ var WorkPage = {
   init: function() {
     this.elem = document.getElementById('current-time');
 
-    if(this.start)
-      this.start.unload();
-
     if(!this.timer)
       this.timer = new Timer();
 
@@ -228,6 +228,7 @@ var WorkPage = {
     this.id = setInterval(this.update.bind(this), 500);
 
     this.start = new Start();
+    this.complete = new Complete();
   },
 
   pause: function() {
@@ -266,8 +267,36 @@ var WorkPage = {
     this.timer.running ? this.timer.stop() : this.timer.start();
   },
 
+  show: function() {
+    var base = document.getElementById('main');
+    base.innerHTML = '';
+
+    var action = document.createElement('section');
+    action.className = 'action';
+
+    var start = document.createElement('a');
+    start.name = 'start';
+    start.textContent = 'Start';
+
+    var end = document.createElement('a');
+    end.name = 'end';
+    end.textContent = 'End';
+
+    action.appendChild(start);
+    action.appendChild(end);
+
+    var current = document.createElement('div');
+    current.id = current.className = 'current-time';
+
+    base.appendChild(action);
+    base.appendChild(current);
+
+    this.init();
+  },
+
   unload: function() {
     this.start.unload();
+    this.complete.unload();
   },
 
   update: function() {
@@ -353,7 +382,8 @@ function Log() {
 
 Log.prototype = extend(Button, {
   up: function() {
-    WorkPage.pause();  
+    WorkPage.pause();
+    WorkPage.unload();
 
     SessionList.show();
     Section.right();
@@ -385,6 +415,21 @@ Start.prototype = extend(Button, {
 
   up: function() {
     WorkPage.startPressed();
+  }
+});
+
+function Complete() {
+  this.elem = document.getElementsByName('complete')[0];
+}
+
+Complete.prototype = extend(Button, {
+  down: function() [
+    this.elem.className += ' clicked';
+  },
+
+  up: function() {
+    this.elem.className = null;
+    WorkPage.saveSession();
   }
 });
 

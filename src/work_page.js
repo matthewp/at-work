@@ -2,9 +2,6 @@ var WorkPage = {
   init: function() {
     this.elem = document.getElementById('current-time');
 
-    if(this.start)
-      this.start.unload();
-
     if(!this.timer)
       this.timer = new Timer();
 
@@ -15,6 +12,7 @@ var WorkPage = {
     this.id = setInterval(this.update.bind(this), 500);
 
     this.start = new Start();
+    this.complete = new Complete();
   },
 
   pause: function() {
@@ -53,8 +51,36 @@ var WorkPage = {
     this.timer.running ? this.timer.stop() : this.timer.start();
   },
 
+  show: function() {
+    var base = document.getElementById('main');
+    base.innerHTML = '';
+
+    var action = document.createElement('section');
+    action.className = 'action';
+
+    var start = document.createElement('a');
+    start.name = 'start';
+    start.textContent = 'Start';
+
+    var end = document.createElement('a');
+    end.name = 'end';
+    end.textContent = 'End';
+
+    action.appendChild(start);
+    action.appendChild(end);
+
+    var current = document.createElement('div');
+    current.id = current.className = 'current-time';
+
+    base.appendChild(action);
+    base.appendChild(current);
+
+    this.init();
+  },
+
   unload: function() {
     this.start.unload();
+    this.complete.unload();
   },
 
   update: function() {
