@@ -8,6 +8,7 @@ modules = src/database.js\
           src/timer.js\
           src/session.js\
           src/sessionlist.js\
+          src/work_page.js\
           src/button.js\
           src/section.js\
           src/work.js\

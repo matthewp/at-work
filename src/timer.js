@@ -16,21 +16,11 @@ Timer.prototype = {
   running: false,
   start: function() {
     this.running = true;
-    this._begin = new Date();
-    this._id = setInterval(this.update, 500);
-  
-    this.setBtnText("Stop");
-    this._btn.className = 'started';
+    this.begin = new Date();  
   },
   stop: function() {
     this.running = false;
-    clearInterval(this._id);
-    this._id = null;
-
     this.time = this.elapsed;
-
-    this.setBtnText("Start");
-    this._btn.className = null;
   },
   complete: function() {
     var session = new Session([this.time]);
@@ -66,11 +56,11 @@ Timer.prototype = {
     this._btn.textContent = text;
   },
   get elapsed() {
-    if(!this._begin)
+    if(!this.begin)
       return NaN;
 
     var now = new Date();
-    var ms = now - this._begin;
+    var ms = now - this.begin;
     return this.time.add(ms);
   },
   unload: function() {
