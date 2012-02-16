@@ -234,6 +234,8 @@ var WorkPage = {
 
     this.complete = new Complete();
     this.complete.listen();
+
+    this.inited = true;
   },
 
   pause: function() {
@@ -251,6 +253,9 @@ var WorkPage = {
 
   restore: function() {
     var state = JSON.parse(localStorage['time']);
+    if(!state)
+      return;
+
     var time = this.timer.time;
 
     time.totalmilliseconds = state.totalmilliseconds;
@@ -264,6 +269,18 @@ var WorkPage = {
       this.timer.resume();
       this.id = setInterval(this.update.bind(this), 500);
     } 
+  },
+
+  resume: function() {
+    this.elem = document.getElementById('current-time');
+
+    this.start = new Start();
+    this.start.listen();
+
+    this.complete = new Complete();
+    this.complete.listen();
+  
+    this.id = setInterval(this.update.bind(this), 500);
   },
 
   saveSession: function() {
@@ -321,7 +338,7 @@ var WorkPage = {
     base.appendChild(action);
     base.appendChild(current);
 
-    this.init();
+    this.inited ? this.resume() : this.init();
   },
 
   unload: function() {
