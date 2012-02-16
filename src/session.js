@@ -1,5 +1,5 @@
 function Session(times) {
-  this.times = times;
+  this.times = times || [];
 }
 
 Session.prototype = {
@@ -69,8 +69,22 @@ Session.getAll = function(callback) {
         return;
       }
 
+      if(!cursor.value.hasOwnProperty('save'))
+        console.log('Is not a session object.');
+
+      if(!(cursor.value instanceof Session))
+        console.log('Really is not a session object.');
+
       sessions.push(cursor.value);
       cursor.continue();
     };
+  });
+};
+
+Session.create = function(obj) {
+  var session = new Session();
+  obj.times.forEach(function(timeData) {
+    var time = TimeSpan.create(timeData);
+    session.times.push(time);
   });
 };
