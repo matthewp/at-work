@@ -279,8 +279,15 @@ var WorkPage = {
 
     this.complete = new Complete();
     this.complete.listen();
-  
-    this.id = setInterval(this.update.bind(this), 500);
+
+    if(this.timer.time) {
+      this.elem.textContent = this.timer.time.toString();
+
+      if(localStorage['running'] === 'true') {
+        this.start.start();`
+        this.id = setInterval(this.update.bind(this), 500);
+      }
+    }
   },
 
   saveSession: function() {

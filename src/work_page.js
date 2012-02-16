@@ -62,7 +62,11 @@ var WorkPage = {
 
     if(this.timer.time) {
       this.elem.textContent = this.timer.time.toString();
-      this.id = setInterval(this.update.bind(this), 500);
+
+      if(localStorage['running'] === 'true') {
+        this.start.start();`
+        this.id = setInterval(this.update.bind(this), 500);
+      }
     }
   },
 
