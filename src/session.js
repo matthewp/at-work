@@ -80,6 +80,7 @@ Session.getAll = function(callback) {
 Session.create = function(obj) {
   var session = new Session();
   session.id = obj.id;
+  session.beginDate = obj.beginDate;
   obj.times.forEach(function(timeData) {
     var time = new TimeSpan(timeData.totalmilliseconds);
     session.times.push(time);

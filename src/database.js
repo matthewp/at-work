@@ -1,6 +1,6 @@
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1;
+    DB_VERSION = 1.1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;

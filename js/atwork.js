@@ -4,7 +4,7 @@
 'use strict';
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1;
+    DB_VERSION = 1.1;
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
@@ -203,6 +203,7 @@ Session.getAll = function(callback) {
 Session.create = function(obj) {
   var session = new Session();
   session.id = obj.id;
+  session.beginDate = obj.beginDate;
   obj.times.forEach(function(timeData) {
     var time = new TimeSpan(timeData.totalmilliseconds);
     session.times.push(time);
@@ -274,7 +275,9 @@ var WorkPage = {
     this.timer = new Timer();
 
     localStorage['enabled'] = false;
+    localStorage['running'] = false;
     localStorage['time'] = null;
+    delete localStorage['begin'];
 
     this.elem.textContent = null;
   },
@@ -321,6 +324,11 @@ var WorkPage = {
   saveSession: function() {
     var time = this.timer.time;
     var session = new Session([time]);
+    var gt = parseInt(localStorage['begin']);
+    var begin = new Date();
+    begin.setTime(gt);
+    session.beginDate = begin;
+
     session.save();
     SessionList.add(session);
     this.reset();
@@ -330,6 +338,8 @@ var WorkPage = {
     localStorage['enabled'] = this.timer.running;
     var strTime = JSON.stringify(ts);
     localStorage['time'] = strTime;
+    localStorage['begin'] = localStorage['begin']
+      || (new Date()).getTime();
   },
 
   startPressed: function() {
@@ -385,7 +395,7 @@ var WorkPage = {
     var ts = this.timer.elapsed;
 
     this.elem.textContent = ts.toString();
-    this.saveState(ts);
+    this.saveState(ts, new Date());
   }
 };
 
