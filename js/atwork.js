@@ -192,13 +192,9 @@ Session.getAll = function(callback) {
         return;
       }
 
-      if(!cursor.value.hasOwnProperty('save'))
-        console.log('Is not a session object.');
+      var session = Session.create(cursor.value);
 
-      if(!(cursor.value instanceof Session))
-        console.log('Really is not a session object.');
-
-      sessions.push(cursor.value);
+      sessions.push(session);
       cursor.continue();
     };
   });
@@ -206,10 +202,13 @@ Session.getAll = function(callback) {
 
 Session.create = function(obj) {
   var session = new Session();
+  session.id = obj.id;
   obj.times.forEach(function(timeData) {
-    var time = TimeSpan.create(timeData);
+    var time = new TimeSpan(timeData.totalmilliseconds);
     session.times.push(time);
   });
+
+  return session;
 };
 
 var SessionList = {
