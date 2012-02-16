@@ -4,6 +4,7 @@ var OS_NAME = 'sessions',
 
 window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
 window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
 function openDB(callback, context) {
   var req = window.indexedDB.open(DB_NAME, DB_VERSION);
@@ -21,6 +22,7 @@ function openDB(callback, context) {
   req.onsuccess = function(e) {
     var db = e.target.result;
 
+    console.log('Version: ' + db.version + ', DB_VERSION: ' + DB_VERSION);
     if(db.setVersion && db.version != DB_VERSION) {
       var verReq = db.setVersion(DB_VERSION);
       verReq.onfailure = req.onerror;
