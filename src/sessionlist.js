@@ -1,3 +1,15 @@
+var monthNames = [
+  'January', 'February', 'March',
+  'April', 'May', 'June', 'July',
+  'August', 'September', 'October',
+  'November', 'December'
+];
+
+function getMonthName(date, short) {
+  var mn = monthNames[date.getMonth()];
+  return short ? mn.substr(0, 3) : mn;
+}
+
 var SessionList = {
   init: function() {
     this.sessions = [];
@@ -24,7 +36,19 @@ var SessionList = {
     this.sessions.forEach(function(session) {
       var li = document.createElement('li');
       li.id = session.id;
-      li.textContent = session.time.toString();
+
+      var date = session.beginDate;
+      var left = document.createElement('span');
+      left.className = 'date';
+      left.textContent = getMonthName(date, true)
+        + ' ' + date.getDay();
+
+      var right = document.createElement('span');
+      right.className = 'time';
+      right.textContent = session.time.toString();
+
+      li.appendChild(left);
+      li.appendChild(right);
 
       ul.appendChild(li);
     });
