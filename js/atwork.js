@@ -261,8 +261,11 @@ var SessionList = {
       right.className = 'time';
       right.textContent = session.time.toString();
 
+      var rule = document.createElement('hr');
+
       li.appendChild(left);
       li.appendChild(right);
+      li.appendChild(rule);
 
       ul.appendChild(li);
     });

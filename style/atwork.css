@@ -134,3 +134,31 @@ nav div#buttons span:nth-child(2) {
   margin-top: 0.5em;
 }
 /* End Timer */
+
+/* Log Page */
+.sessions {
+  font-size: 1.6em;
+  padding: 0;
+}
+
+.sessions li {
+  list-style: none;
+}
+
+.sessions li .date {
+  padding-left: .8em;
+  margin-right: 2em;
+}
+
+.sessions li .time {
+  
+}
+
+.sessions li hr {
+  border: 0;
+  color: #996633;
+  background-color: #996633;
+  height: .05em;
+  width: 93%;
+}
+/* End Log Page */
