@@ -311,7 +311,8 @@ var WorkPage = {
     this.complete = new Complete();
     this.complete.listen();
 
-    if(this.timer.time) {
+    var time = this.timer.time;
+    if(time && time.totalmilliseconds > 0) {
       this.elem.textContent = this.timer.time.toString();
 
       if(localStorage['running'] === 'true') {
