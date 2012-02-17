@@ -84,13 +84,11 @@ nav div#buttons span:nth-child(2) {
 }
 
 .action {
+  margin-top: 2em;
 	width: 100%;
 }
 
 .action a {
-  background: #F0EAEA;
-  border-radius: 5px;
-  border: 1px solid rgba(18, 7, 6, 0.2);
   display: block;
   font-size: 2.2em;
   position: relative;
@@ -109,7 +107,7 @@ nav div#buttons span:nth-child(2) {
 }
 
 .action a[name="start"] {
-	margin-bottom: .3em;
+	margin-bottom: .8em;
 }
 
 .action a[name="start"]:before {
@@ -131,7 +129,7 @@ nav div#buttons span:nth-child(2) {
   text-align: center;
   font-size: 3em;
   font-weight: bolder;
-  margin-top: 0.5em;
+  margin-top: 0.8em;
 }
 /* End Timer */
 
