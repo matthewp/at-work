@@ -16,7 +16,8 @@ function openDB(callback, context) {
 
   req.onupgradeneeded = function(e) {
     var db = e.target.result;
-    var os = db.createObjectStore(OS_NAME, { keyPath: "id" });
+    if(!db.objectStoreNames.contains(OS_NAME))
+      var os = db.createObjectStore(OS_NAME, { keyPath: "id" });
   };
 
   req.onsuccess = function(e) {
