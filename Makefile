@@ -20,7 +20,7 @@ modules = src/database.js\
 js/atwork.js: ${modules}
 	echo "/* vim: set shiftwidth=2 tabstop=2 autoindent cindent expandtab: */" > $@
 	echo ${\n} >> $@
-	echo "(function() {" >> $@
+	echo "(function(undefined) {" >> $@
 	echo "'use strict';" >> $@
 	for mod in ${modules} ; do \
     cat >> $@ $$mod && echo ${\n} >> $@ ; \

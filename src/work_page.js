@@ -18,6 +18,18 @@ var WorkPage = {
     this.inited = true;
   },
 
+  get cachedBeginDate () {
+    var cached = localStorage['begin'];
+    if(cached === null)
+      return undefined;
+
+    var gt = parseInt(localStorage['begin']);
+    var begin = new Date();
+    begin.setTime(gt);
+
+    return begin;
+  }
+
   pause: function() {
     clearInterval(this.id);
   },
@@ -48,8 +60,8 @@ var WorkPage = {
     this.elem.textContent = time.toString();
 
     if(localStorage['running'] === 'true') {
+      this.timer.begin = this.cachedBeginDate;
       this.timer.resume();
-      this.id = setInterval(this.update.bind(this), 500);
     } 
   },
 
@@ -62,13 +74,13 @@ var WorkPage = {
     this.complete = new Complete();
     this.complete.listen();
 
-    var time = this.timer.time;
-    if(time && time.totalmilliseconds > 0) {
-      this.elem.textContent = this.timer.time.toString();
-
-      if(localStorage['running'] === 'true') {
+    if(this.timer.elapsed !== NaN) {
+      if(timer.timer.running) {
+        this.elem.textContent  = this.timer.elapsed.toString();
         this.start.start();
         this.id = setInterval(this.update.bind(this), 500);
+      } else {
+        this.elem.textContent = this.timer.time.toString();
       }
     }
   },
@@ -76,10 +88,7 @@ var WorkPage = {
   saveSession: function() {
     var time = this.timer.time;
     var session = new Session([time]);
-    var gt = parseInt(localStorage['begin']);
-    var begin = new Date();
-    begin.setTime(gt);
-    session.beginDate = begin;
+    session.beginDate = this.cachedBeginDate;
 
     session.save();
     SessionList.add(session);
