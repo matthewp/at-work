@@ -74,8 +74,8 @@ var WorkPage = {
     this.complete = new Complete();
     this.complete.listen();
 
-    if(this.timer.elapsed !== NaN) {
-      if(timer.timer.running) {
+    if(!isNaN(this.timer.elapsed)) {
+      if(this.timer.running) {
         this.elem.textContent  = this.timer.elapsed.toString();
         this.start.start();
         this.id = setInterval(this.update.bind(this), 500);
