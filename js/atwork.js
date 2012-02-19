@@ -305,7 +305,7 @@ var WorkPage = {
     begin.setTime(gt);
 
     return begin;
-  }
+  },
 
   pause: function() {
     clearInterval(this.id);
