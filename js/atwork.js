@@ -256,7 +256,7 @@ var SessionList = {
       var left = document.createElement('span');
       left.className = 'date';
       left.textContent = getMonthName(date, true)
-        + ' ' + date.getDay();
+        + ' ' + date.getDate();
 
       var right = document.createElement('span');
       right.className = 'time';
