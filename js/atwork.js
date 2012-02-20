@@ -300,10 +300,7 @@ var WorkPage = {
     if(cached === null)
       return undefined;
 
-    var gt = parseInt(localStorage['begin']);
-    var begin = new Date();
-    begin.setTime(gt);
-
+    var begin = new Date(cached);
     return begin;
   },
 
@@ -377,7 +374,7 @@ var WorkPage = {
     var strTime = JSON.stringify(ts);
     localStorage['time'] = strTime;
     localStorage['begin'] = localStorage['begin']
-      || (new Date()).getTime();
+      || (new Date()).toJSON();
   },
 
   startPressed: function() {
