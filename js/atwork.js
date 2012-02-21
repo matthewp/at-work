@@ -387,7 +387,7 @@ var WorkPage = {
       this.pause();
 
       localStorage['running'] = false;
-
+      localStorage['prev'] = localStorage['time'];
       return;
     }
 
