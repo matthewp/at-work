@@ -20,7 +20,7 @@ Timer.prototype = {
 
   get elapsed() {
     if(!this.begin)
-      return NaN;
+      return undefined;
 
     var now = new Date();
     var ms = now - this.begin;

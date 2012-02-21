@@ -114,7 +114,7 @@ Timer.prototype = {
 
   get elapsed() {
     if(!this.begin)
-      return NaN;
+      return undefined;
 
     var now = new Date();
     var ms = now - this.begin;
@@ -281,16 +281,16 @@ var WorkPage = {
 
     if(!this.timer)
       this.timer = new Timer();
-
-    if(localStorage['enabled'] === 'true') {
-      this.restore();
-    }
     
     this.start = new Start();
     this.start.listen();
 
     this.complete = new Complete();
     this.complete.listen();
+
+    if(localStorage['enabled'] === 'true') {
+      this.restore();
+    }
 
     this.inited = true;
   },
@@ -320,23 +320,27 @@ var WorkPage = {
   },
 
   restore: function() {
-    var state = JSON.parse(localStorage['time']);
+    var running = localStorage['running'] === 'true';
+             
+    var state = JSON.parse(localStorage['prev']);
     if(!state)
       return;
 
     var time = this.timer.time;
-
-    time.totalmilliseconds = state.totalmilliseconds;
-    time.hours = state.hours;
-    time.minutes = state.minutes;
-    time.seconds = state.seconds;
-
-    this.elem.textContent = time.toString();
-
-    if(localStorage['running'] === 'true') {
+    time.totalmilliseconds = state.totalmilliseconds || 0;
+    time.hours = state.hours || 0;
+    time.minutes = state.minutes || 0;
+    time.seconds = state.seconds || 0;
+ 
+    if(running) {
       this.timer.begin = this.cachedBeginDate;
       this.timer.resume();
-    } 
+      this.elem.textContent = this.timer.elapsed.toString();
+      this.startTimer();
+      this.start.start();
+    } else {
+      this.elem.textContent = time.toString();
+    }
   },
 
   resume: function() {
@@ -348,11 +352,11 @@ var WorkPage = {
     this.complete = new Complete();
     this.complete.listen();
 
-    if(!isNaN(this.timer.elapsed)) {
+    if(typeof this.timer.elapsed !== "undefined") {
       if(this.timer.running) {
         this.elem.textContent  = this.timer.elapsed.toString();
         this.start.start();
-        this.id = setInterval(this.update.bind(this), 500);
+        this.startTimer();
       } else {
         this.elem.textContent = this.timer.time.toString();
       }
@@ -373,8 +377,7 @@ var WorkPage = {
     localStorage['enabled'] = this.timer.running;
     var strTime = JSON.stringify(ts);
     localStorage['time'] = strTime;
-    localStorage['begin'] = localStorage['begin']
-      || (new Date()).toJSON();
+    localStorage['prev'] = JSON.stringify(this.timer.time);
   },
 
   startPressed: function() {
@@ -390,8 +393,13 @@ var WorkPage = {
 
     this.timer.start();
     this.start.start();
-    this.id = setInterval(this.update.bind(this), 500);
+    this.startTimer();
     localStorage['running'] = true;
+    localStorage['begin'] = (new Date()).toJSON();
+  },
+
+  startTimer: function() {
+    this.id = setInterval(this.update.bind(this), 500);
   },
 
   show: function() {
@@ -430,7 +438,7 @@ var WorkPage = {
     var ts = this.timer.elapsed;
 
     this.elem.textContent = ts.toString();
-    this.saveState(ts, new Date());
+    this.saveState(ts);
   }
 };
 
