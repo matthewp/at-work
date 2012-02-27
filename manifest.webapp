@@ -8,9 +8,9 @@
     "url": "http://www.matthewphillips.info"
   },
   "icons": {
-    "16": "",
-    "48": "",
-    "128": ""
+    "16": "style/icons/atwork16.png",
+    "48": "style/icons/atwork48.png",
+    "128": "style/icons/atwork128.png"
   },
   "default_locale": "en"
 }
