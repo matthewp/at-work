@@ -1,5 +1,6 @@
 function Session(times) {
   this.times = times || [];
+  this.id = 0;
 }
 
 Session.prototype = {
@@ -19,8 +20,6 @@ Session.prototype = {
     this._time = new TimeSpan(this.totalmilliseconds);
     return this._time;
   },
-
-  id: 0,
 
   save: function() {
     var now = new Date();

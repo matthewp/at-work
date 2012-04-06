@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v1 2012-02-27
+# v1 2012-04-06.4
 
 CACHE:
 # /
@@ -10,6 +10,7 @@ CACHE:
 # /js
 /js/atwork.js
 /js/install.js
+/libs/hammerjs/hammer.js
 
 # /style
 /style/atwork.css

@@ -53,9 +53,26 @@ var SessionList = {
       li.appendChild(right);
       li.appendChild(rule);
 
+      var hammer = new Hammer(li);
+      hammer.ondragstart = this.dragStart;
+      hammer.ondrag = this.dragging;
+      hammer.ondragend = this.dragEnd;
+
       ul.appendChild(li);
-    });
+    }, this);
 
     base.appendChild(ul);
+  },
+
+  dragStart: function(e) {
+    var args = Array.prototype.slice.call(arguments);
+  },
+
+  dragging: function(e) {
+    var args = Array.prototype.slice.call(arguments);
+  },
+
+  dragEnd: function(e) {
+    var args = Array.prototype.slice.call(arguments);
   }
 };

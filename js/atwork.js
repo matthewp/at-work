@@ -124,6 +124,7 @@ Timer.prototype = {
 
 function Session(times) {
   this.times = times || [];
+  this.id = 0;
 }
 
 Session.prototype = {
@@ -143,8 +144,6 @@ Session.prototype = {
     this._time = new TimeSpan(this.totalmilliseconds);
     return this._time;
   },
-
-  id: 0,
 
   save: function() {
     var now = new Date();
@@ -268,10 +267,27 @@ var SessionList = {
       li.appendChild(right);
       li.appendChild(rule);
 
+      var hammer = new Hammer(li);
+      hammer.ondragstart = this.dragStart;
+      hammer.ondrag = this.dragging;
+      hammer.ondragend = this.dragEnd;
+
       ul.appendChild(li);
-    });
+    }, this);
 
     base.appendChild(ul);
+  },
+
+  dragStart: function(e) {
+    var args = Array.prototype.slice.call(arguments);
+  },
+
+  dragging: function(e) {
+    var args = Array.prototype.slice.call(arguments);
+  },
+
+  dragEnd: function(e) {
+    var args = Array.prototype.slice.call(arguments);
   }
 };
 

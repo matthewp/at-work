@@ -1,0 +1,3 @@
+[submodule "libs/hammerjs"]
+	path = libs/hammerjs
+	url = https://github.com/EightMedia/hammer.js.git
