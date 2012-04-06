@@ -27,7 +27,11 @@ body {
 
 /* Navigation */
 nav {
+  width: 100%;
+}
 
+nav #buttons {
+  width: 100%;
 }
 
 nav #active {
@@ -67,6 +71,7 @@ nav div#buttons span {
   line-height: 2em;
   height: 2em;
   width: 49.6%;
+  width: -moz-calc(50% - 0.08em);
 }
 
 nav div#buttons span:nth-child(2) {
