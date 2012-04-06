@@ -312,9 +312,15 @@ var SessionList = {
   },
 
   dragging: function(e) {
-    var dx = e.distanceX - this.lastX;
+    if(!this.isDragging)
+      return;
 
-    // TODO Do something with dx.
+    var dx = e.distanceX - this.lastX,
+        el = e.originalEvent.target;
+
+    window.requestAnimationFrame(function() {
+      el.style.webkitTransform = 'translateX(' + dx + 'px)';
+    });
   },
 
   dragEnd: function(e) {
