@@ -80,7 +80,7 @@ var SessionList = {
         el = e.originalEvent.target;
 
     window.requestAnimationFrame(function() {
-      el.style.webkitTransform = 'translateX(' + dx + 'px)';
+      el.style[transformStyle] = 'translateX(' + dx + 'px)';
     });
   },
 

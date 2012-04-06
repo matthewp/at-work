@@ -3,6 +3,8 @@ define \n
 endef
 
 modules = src/rAF.js\
+          src/prefixes.js\
+          src/transform.js\
           src/database.js\
           src/extend.js\
           src/timespan.js\
