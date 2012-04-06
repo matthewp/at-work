@@ -41,6 +41,7 @@ nav #active {
   width: 50%;
 
   transition: all .25s ease-in-out;
+  -khtml-transition: all .25s ease-in-out;
   -webkit-transition: all .25s ease-in-out;
   -moz-transition: all .25s ease-in-out;
   -o-transition: all .25s ease-in-out;
@@ -140,11 +141,13 @@ nav div#buttons span:nth-child(2) {
 
 /* Log Page */
 .sessions {
+  background: #3D3D3D;
   font-size: 1.6em;
   padding: 0;
 }
 
 .sessions li {
+  background: white;
   list-style: none;
 }
 

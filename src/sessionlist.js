@@ -86,5 +86,46 @@ var SessionList = {
 
   dragEnd: function(e) {
     this.isDragging = false;
+
+    var w = window.innerWidth,
+        p = w / e.distance,
+        el = e.originalEvent.target,
+        s = el.style,
+        transVal = 'all .25s ease-in-out',
+        frame;
+
+    var remove = function(then) {
+      var events = 'transitionend oTransitionEnd webkitTransitionEnd'.split(' ');
+
+      events.forEach(function(evt) {
+        el.addEventListener(evt, function untrans() {
+          s[transitionStyle] = '';
+          events.forEach(function(evt) {
+            el.removeEventListener(evt, untrans);
+          });
+
+          (then || function(){})();
+        });
+      });
+    }
+
+    if(p > 3) {
+      frame = function() {
+        s[transitionStyle] = transVal;
+        s[transformStyle] = 'translateX(0px)';
+        remove();
+      };
+    } else {
+      frame = function() {
+        s[transitionStyle] = transVal;
+        s[transformStyle] = 'translate(-' + w + 'px)';
+        remove(function() {
+          var ul = el.parentElement;
+          ul.removeChild(el);
+        });
+      };
+    }
+
+    window.requestAnimationFrame(frame);
   }
 };
