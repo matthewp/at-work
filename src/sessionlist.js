@@ -54,9 +54,9 @@ var SessionList = {
       li.appendChild(rule);
 
       var hammer = new Hammer(li);
-      hammer.ondragstart = this.dragStart;
-      hammer.ondrag = this.dragging;
-      hammer.ondragend = this.dragEnd;
+      hammer.ondragstart = this.dragStart.bind(this);
+      hammer.ondrag = this.dragging.bind(this);
+      hammer.ondragend = this.dragEnd.bind(this);
 
       ul.appendChild(li);
     }, this);
@@ -65,14 +65,20 @@ var SessionList = {
   },
 
   dragStart: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    if(e.direction !== 'left')
+      return;
+
+    this.isDragging = true;
+    this.lastX = 0;
   },
 
   dragging: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    var dx = e.distanceX - this.lastX;
+
+    // TODO Do something with dx.
   },
 
   dragEnd: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    this.isDragging = false;
   }
 };

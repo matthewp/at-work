@@ -2,6 +2,31 @@
 
 (function(undefined) {
 'use strict';
+(function() {
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] 
+                                   || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+ 
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+              timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+ 
+    if (!window.cancelAnimationFrame)
+        window.cancelAnimationFrame = function(id) {
+            clearTimeout(id);
+        };
+}());
+
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
     DB_VERSION = 1.1;
@@ -268,9 +293,9 @@ var SessionList = {
       li.appendChild(rule);
 
       var hammer = new Hammer(li);
-      hammer.ondragstart = this.dragStart;
-      hammer.ondrag = this.dragging;
-      hammer.ondragend = this.dragEnd;
+      hammer.ondragstart = this.dragStart.bind(this);
+      hammer.ondrag = this.dragging.bind(this);
+      hammer.ondragend = this.dragEnd.bind(this);
 
       ul.appendChild(li);
     }, this);
@@ -279,15 +304,21 @@ var SessionList = {
   },
 
   dragStart: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    if(e.direction !== 'left')
+      return;
+
+    this.isDragging = true;
+    this.lastX = 0;
   },
 
   dragging: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    var dx = e.distanceX - this.lastX;
+
+    // TODO Do something with dx.
   },
 
   dragEnd: function(e) {
-    var args = Array.prototype.slice.call(arguments);
+    this.isDragging = false;
   }
 };
 

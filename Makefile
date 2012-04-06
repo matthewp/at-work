@@ -2,7 +2,8 @@ define \n
 
 endef
 
-modules = src/database.js\
+modules = src/rAF.js\
+          src/database.js\
           src/extend.js\
           src/timespan.js\
           src/timer.js\
