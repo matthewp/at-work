@@ -1,17 +1,11 @@
 function TimeSpan(ms) {
-  if(ms) {
-    this.totalmilliseconds = ms;
-    this.seconds = Math.floor(ms/1000) % 60;
-    this.minutes = Math.floor(ms/60000) % 60;
-    this.hours = Math.floor(ms/3600000) % 24;
-  }
+  this.totalmilliseconds = ms || 0;
+  this.seconds = (ms && Math.floor(ms/1000) % 60) || 0;
+  this.minutes = (ms && Math.floor(ms/60000) % 60) || 0;
+  this.hours = (ms && Math.floor(ms/3600000) % 24) || 0;
 }
 
 TimeSpan.prototype = {
-  totalmilliseconds: 0,
-  seconds: 0,
-  minutes: 0,
-  hours: 0,
   add: function(other) {
     other = typeof other === "number" ? other : other.totalmilliseconds;
     var ms = this.totalmilliseconds + other;
@@ -31,5 +25,4 @@ TimeSpan.prototype = {
     
     return num;
   }
-
 };
