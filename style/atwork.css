@@ -141,13 +141,16 @@ nav div#buttons span:nth-child(2) {
 
 /* Log Page */
 .sessions {
-  background: #3D3D3D;
   font-size: 1.6em;
   padding: 0;
 }
 
-.sessions li {
+.sessions .item {
   background: white;
+}
+
+.sessions li {
+  background: #3D3D3D;
   list-style: none;
 }
 

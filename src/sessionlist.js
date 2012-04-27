@@ -37,6 +37,9 @@ var SessionList = {
       var li = document.createElement('li');
       li.id = session.id;
 
+      var div = document.createElement('div');
+      div.className = 'item';
+
       var date = session.beginDate;
       var left = document.createElement('span');
       left.className = 'date';
@@ -49,9 +52,10 @@ var SessionList = {
 
       var rule = document.createElement('hr');
 
-      li.appendChild(left);
-      li.appendChild(right);
-      li.appendChild(rule);
+      div.appendChild(left);
+      div.appendChild(right);
+      div.appendChild(rule);
+      li.appendChild(div);
 
       var hammer = new Hammer(li);
       hammer.ondragstart = this.dragStart.bind(this);
