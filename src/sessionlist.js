@@ -27,37 +27,57 @@ var SessionList = {
   },
 
   show: function() {
-    var base = this.base;
+    var base = this.base,
+        ce = document.createElement.bind(document);
+
     base.innerHTML = '';
 
-    var ul = document.createElement('ul');
+    var ul = ce('ul');
     ul.className = 'sessions';
 
     this.sessions.forEach(function(session) {
-      var li = document.createElement('li');
+      var li = ce('li');
       li.id = session.id;
 
-      var div = document.createElement('div');
+      var div = ce('div');
       div.className = 'item';
 
+      var info = ce('div');
+      info.className = 'info';
+
       var date = session.beginDate;
-      var left = document.createElement('span');
+      var left = ce('span');
       left.className = 'date';
       left.textContent = getMonthName(date, true)
         + ' ' + date.getDate();
 
-      var right = document.createElement('span');
+      var right = ce('span');
       right.className = 'time';
       right.textContent = session.time.toString();
 
-      var rule = document.createElement('hr');
+      var rule = ce('hr');
 
-      div.appendChild(left);
-      div.appendChild(right);
-      div.appendChild(rule);
+      info.appendChild(left);
+      info.appendChild(right);
+      info.appendChild(rule);
+      div.appendChild(info);
+
+      var del = ce('div');
+      del.className = 'del';
+
+      var confirm = ce('span');
+      confirm.textContent = 'Delete?';
+
+      var cancel = ce('span');
+      cancel.textContent = 'Cancel';
+
+      del.appendChild(confirm);
+      del.appendChild(cancel);
+      div.appendChild(del);
+
       li.appendChild(div);
 
-      var hammer = new Hammer(li);
+      var hammer = new Hammer(info);
       hammer.ondragstart = this.dragStart.bind(this);
       hammer.ondrag = this.dragging.bind(this);
       hammer.ondragend = this.dragEnd.bind(this);

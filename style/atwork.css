@@ -145,12 +145,21 @@ nav div#buttons span:nth-child(2) {
   padding: 0;
 }
 
-.sessions .item {
+.sessions .item, .sessions .item .info, .sessions .item .del {
+  width: 100%;
+}
+
+.sessions .item .info {
   background: white;
+  z-index: 2;
+}
+
+.sessions .item .del {
+  background: #3D3D3D;
+  z-index: 1;
 }
 
 .sessions li {
-  background: #3D3D3D;
   list-style: none;
 }
 
