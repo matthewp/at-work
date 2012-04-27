@@ -307,7 +307,6 @@ var SessionList = {
       right.textContent = session.time.toString();
 
       var rule = ce('hr');
-
       info.appendChild(left);
       info.appendChild(right);
       info.appendChild(rule);
@@ -325,7 +324,6 @@ var SessionList = {
       del.appendChild(confirm);
       del.appendChild(cancel);
       div.appendChild(del);
-
       li.appendChild(div);
 
       var hammer = new Hammer(info);

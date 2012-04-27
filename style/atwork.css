@@ -145,8 +145,23 @@ nav div#buttons span:nth-child(2) {
   padding: 0;
 }
 
+.sessions, .sessions li, .sessions .item {
+  height: 55px;
+  width: 100%;
+}
+
 .sessions .item, .sessions .item .info, .sessions .item .del {
   width: 100%;
+}
+
+.sessions .item {
+  position: relative;
+}
+
+.sessions .item div {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
 .sessions .item .info {
@@ -157,6 +172,14 @@ nav div#buttons span:nth-child(2) {
 .sessions .item .del {
   background: #3D3D3D;
   z-index: 1;
+}
+
+.sessions .item .del span:first-child {
+  background: red;
+}
+
+.sessions .item .del span:nth-child(2) {
+  background: green;
 }
 
 .sessions li {
