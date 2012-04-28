@@ -5,6 +5,7 @@ endef
 modules = src/rAF.js\
           src/prefixes.js\
           src/transform.js\
+          src/dict.js\
           src/database.js\
           src/extend.js\
           src/timespan.js\

@@ -26,6 +26,10 @@ var SessionList = {
     this.sessions.push(session);
   },
 
+  on: function(evt, action) {
+
+  },
+
   show: function() {
     var base = this.base,
         ce = document.createElement.bind(document);

@@ -180,6 +180,10 @@ nav div#buttons span:nth-child(2) {
   width: 50%;
 }
 
+.sessions .item .del span:hover {
+  background: yellow;
+}
+
 .sessions .item .del span:first-child {
   background: red;
 }
