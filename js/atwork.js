@@ -320,6 +320,16 @@ var SessionList = {
     this.base = document.getElementById('main');
 
     Session.getAll(this.got.bind(this));
+
+    Eventable.call(this);
+    var self = this,
+        proto = Eventable.prototype;
+
+    Object.keys(proto).forEach(function(key) {
+      if(Eventable.hasOwnProperty(key) {
+        self[key] = proto[key];
+      }
+    });
   },
 
   got: function(sessions) {
