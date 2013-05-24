@@ -1,4 +1,6 @@
 a[name="install"] {
 	display: block;
-	width: 100%;
+	width: 100px;
+  height: 29px;
+  background-color: rgb(245, 245, 245);
 }

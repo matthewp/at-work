@@ -1,3 +1,8 @@
+var transPerm = {
+  READ: 'readonly',
+  WRITE: 'readwrite'
+};
+
 function Session(times) {
   this.times = times || [];
 }
@@ -27,7 +32,7 @@ Session.prototype = {
     this.id = now.getTime();
 
     openDB(function(db) {
-      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
+      var trans = db.transaction([OS_NAME], transPerm.WRITE);
             
       trans.onerror = function(e) {
         console.log(e);
@@ -49,7 +54,7 @@ Session.getAll = function(callback) {
   openDB(function(db) {
     var sessions = [];
 
-    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
+    var trans = db.transaction([OS_NAME], transPerm.READ);
     trans.onerror = function(e) {
       console.log(e);
     };

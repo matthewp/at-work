@@ -25,7 +25,8 @@ var Installer = {
 	},
 	install: function() {
 		console.log('Starting install.');
-		navigator.apps.install('manifest.webapp', this.installed, this.error);
+		navigator.apps.install(location.protocol + "//" + location.host +
+      '/manifest.webapp', this.installed, this.error);
 	},
 	installed: function() {
 		console.log('Install successful!');

@@ -4,14 +4,14 @@
 'use strict';
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1.1;
+    DB_VERSION = 1.2;
 
-window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
 function openDB(callback, context) {
-  var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
 
   req.onerror = function(e) {
     console.log(e);
@@ -122,6 +122,11 @@ Timer.prototype = {
   }
 };
 
+var transPerm = {
+  READ: 'readonly',
+  WRITE: 'readwrite'
+};
+
 function Session(times) {
   this.times = times || [];
 }
@@ -151,7 +156,7 @@ Session.prototype = {
     this.id = now.getTime();
 
     openDB(function(db) {
-      var trans = db.transaction([OS_NAME], IDBTransaction.READ_WRITE);
+      var trans = db.transaction([OS_NAME], transPerm.WRITE);
             
       trans.onerror = function(e) {
         console.log(e);
@@ -173,7 +178,7 @@ Session.getAll = function(callback) {
   openDB(function(db) {
     var sessions = [];
 
-    var trans = db.transaction([OS_NAME], IDBTransaction.READ_ONLY);
+    var trans = db.transaction([OS_NAME], transPerm.READ);
     trans.onerror = function(e) {
       console.log(e);
     };

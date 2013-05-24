@@ -72,6 +72,8 @@ nav div#buttons span {
   height: 2em;
   width: 49.6%;
   width: -moz-calc(50% - 0.08em);
+  width: calc(50% - 0.08em);
+
 }
 
 nav div#buttons span:nth-child(2) {

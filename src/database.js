@@ -1,13 +1,13 @@
 var OS_NAME = 'sessions',
     DB_NAME = 'atwork',
-    DB_VERSION = 1.1;
+    DB_VERSION = 1.2;
 
-window.indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
+var indexedDB = window.indexedDB || window.webkitIndexedDB || window.mozIndexedDB || window.msIndexedDB;
+var IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction;
+var IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange;
 
 function openDB(callback, context) {
-  var req = window.indexedDB.open(DB_NAME, DB_VERSION);
+  var req = indexedDB.open(DB_NAME, DB_VERSION);
 
   req.onerror = function(e) {
     console.log(e);
