@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "name": "At Work",
+  "short_name": "At Work",
+  "icons": [{
+    "src": "style/icons/atwork16.png",
+    "type": "image/png",
+    "sizes": "16x16"
+  }, {
+    "src": "style/icons/atwork48.png",
+    "type": "image/png",
+    "sizes": "48x48"
+  }, {
+    "src": "style/icons/atwork128.png",
+    "type": "image/png",
+    "sizes": "128x128"
+  }],
+  "display": "standalone"
+}
