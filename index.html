@@ -1,11 +1,12 @@
-<!DOCTYPE html>
-<html manifest="manifest.appcache">
+<!doctype html>
+<html lang="en-GB">
 <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>At Work</title>
+  <link rel="manifest" href="manifest.json">
 	<link rel="stylesheet" href="style/atwork.css" type="text/css" />
-  <script type="application/javascript" src="js/atwork.js"></script>
   <link rel="apple-touch-icon" href="style/icons/atwork57.png" />
   <link rel="apple-touch-icon" sizes="72x72" href="style/icons/atwork72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="style/icons/atwork114.png" />
@@ -29,5 +30,18 @@
       <!-- Current time here -->
     </div>
   </div>
+  <script src="js/atwork.js"></script>
+  <script>
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js', { scope: '/' })
+        .then(function(registration) {
+              console.log("Service Worker Registered");
+        });
+
+      navigator.serviceWorker.ready.then(function(registration) {
+         console.log("Service Worker Ready");
+      });
+    }
+  </script>
 </body>
 </html>

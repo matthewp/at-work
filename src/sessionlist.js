@@ -36,6 +36,9 @@ var SessionList = {
     this.sessions.forEach(function(session) {
       var li = document.createElement('li');
       li.id = session.id;
+      li.onclick = function(){
+        SessionPage.show(session);
+      };
 
       var date = session.beginDate;
       var left = document.createElement('span');
@@ -57,5 +60,7 @@ var SessionList = {
     });
 
     base.appendChild(ul);
+
+    Navigator.save({page:'log'}, null, "/log");
   }
 };

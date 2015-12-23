@@ -1,8 +1,18 @@
+var App = {};
+
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Section.init();
   WorkPage.init();
   SessionList.init();
-  (new Work()).listen();
-  (new Log()).listen();
+  SessionPage.init();
+  App.work = new Work();
+  App.work.listen();
+
+  App.log = new Log();
+  App.log.listen();
+});
+
+window.addEventListener('popstate', function(e) {
+  Navigator.go(e.state || {page: 'work'});
 });

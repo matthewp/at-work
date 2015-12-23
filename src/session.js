@@ -33,7 +33,7 @@ Session.prototype = {
 
     openDB(function(db) {
       var trans = db.transaction([OS_NAME], transPerm.WRITE);
-            
+
       trans.onerror = function(e) {
         console.log(e);
       };
@@ -64,7 +64,7 @@ Session.getAll = function(callback) {
 
     var req = os.openCursor(keyRange);
     req.onerror = function(e) {
-      console.log(e);
+      console.error(e);
     };
 
     req.onsuccess = function(e) {
@@ -92,4 +92,10 @@ Session.create = function(obj) {
   });
 
   return session;
+};
+
+Session.findById = function(sessions, id) {
+  return sessions.filter(function(session){
+    return session.id === id;
+  })[0];
 };

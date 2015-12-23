@@ -1,17 +1,17 @@
 @font-face {
   font-family: 'IconicFill';
   src: url('fonts/iconic_fill.eot');
-  src: local('IconicFill'), 
-    url('fonts/iconic_fill.svg#iconic') format('svg'), 
-    url('fonts/iconic_fill.otf') format('opentype'); 
+  src: local('IconicFill'),
+    url('fonts/iconic_fill.svg#iconic') format('svg'),
+    url('fonts/iconic_fill.otf') format('opentype');
 }
 
 @font-face {
   font-family: 'IconicStroke';
   src: url('fonts/iconic_stroke.eot');
-  src: local('IconicStroke'), 
+  src: local('IconicStroke'),
     url('fonts/iconic_stroke.svg#iconic') format('svg'),
-    url('fonts/iconic_stroke.otf') format('opentype'); 
+    url('fonts/iconic_stroke.otf') format('opentype');
 }
 
 html, body {
@@ -122,7 +122,7 @@ nav div#buttons span:nth-child(2) {
 }
 
 .action a.started[name="start"]:before {
-  content:'\e04a'; 
+  content:'\e04a';
 }
 
 .action a[name="end"]:before {
@@ -156,7 +156,7 @@ nav div#buttons span:nth-child(2) {
 }
 
 .sessions li .time {
-  
+
 }
 
 .sessions li hr {
@@ -167,3 +167,11 @@ nav div#buttons span:nth-child(2) {
   width: 93%;
 }
 /* End Log Page */
+
+/* Session Page */
+.session-page {
+  margin-top: 1em;
+  padding-left: .8em;
+  font-size: 1.6em;
+}
+/* End Session Page */

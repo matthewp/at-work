@@ -157,7 +157,7 @@ Session.prototype = {
 
     openDB(function(db) {
       var trans = db.transaction([OS_NAME], transPerm.WRITE);
-            
+
       trans.onerror = function(e) {
         console.log(e);
       };
@@ -188,7 +188,7 @@ Session.getAll = function(callback) {
 
     var req = os.openCursor(keyRange);
     req.onerror = function(e) {
-      console.log(e);
+      console.error(e);
     };
 
     req.onsuccess = function(e) {
@@ -216,6 +216,12 @@ Session.create = function(obj) {
   });
 
   return session;
+};
+
+Session.findById = function(sessions, id) {
+  return sessions.filter(function(session){
+    return session.id === id;
+  })[0];
 };
 
 var monthNames = [
@@ -256,6 +262,9 @@ var SessionList = {
     this.sessions.forEach(function(session) {
       var li = document.createElement('li');
       li.id = session.id;
+      li.onclick = function(){
+        SessionPage.show(session);
+      };
 
       var date = session.beginDate;
       var left = document.createElement('span');
@@ -277,6 +286,30 @@ var SessionList = {
     });
 
     base.appendChild(ul);
+
+    Navigator.save({page:'log'}, null, "/log");
+  }
+};
+
+var SessionPage = {
+  init: function() {
+    this.base = document.getElementById('main');
+  },
+
+  show: function(session) {
+    var base = this.base;
+    base.innerHTML = '';
+
+    var container = document.createElement('section');
+    container.className = 'session-page';
+
+    var date = session.beginDate;
+    var left = document.createElement('span');
+    left.className = 'date';
+    left.textContent = getMonthName(date, true) + ' ' + date.getDate();
+
+    container.appendChild(left);
+    base.appendChild(container);
   }
 };
 
@@ -511,7 +544,7 @@ function Work() {
 
 Work.prototype = extend(Button, {
   up: function() {
-    WorkPage.show();    
+    WorkPage.show();
     Section.left();
   }
 });
@@ -574,13 +607,42 @@ Complete.prototype = extend(Button, {
   }
 });
 
+var Navigator = {
+  go: function(state){
+    var page = state.page;
+    switch(page) {
+      case 'work':
+        App.work.up();
+        break;
+      case 'log':
+        App.log.up();
+        break;
+    }
+  },
+
+  save: function(state, title, url){
+    return; // current disabled
+    history.pushState(state, title, url);
+  }
+};
+
+var App = {};
+
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
   Section.init();
   WorkPage.init();
   SessionList.init();
-  (new Work()).listen();
-  (new Log()).listen();
+  SessionPage.init();
+  App.work = new Work();
+  App.work.listen();
+
+  App.log = new Log();
+  App.log.listen();
+});
+
+window.addEventListener('popstate', function(e) {
+  Navigator.go(e.state || {page: 'work'});
 });
 
 })();

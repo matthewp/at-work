@@ -8,6 +8,7 @@ modules = src/database.js\
           src/timer.js\
           src/session.js\
           src/sessionlist.js\
+          src/session_page.js\
           src/work_page.js\
           src/button.js\
           src/section.js\
@@ -15,6 +16,7 @@ modules = src/database.js\
           src/log.js\
           src/start.js\
           src/complete.js\
+          src/navigator.js\
           src/page_load.js
 
 js/atwork.js: ${modules}
