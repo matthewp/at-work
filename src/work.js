@@ -4,7 +4,7 @@ function Work() {
 
 Work.prototype = extend(Button, {
   up: function() {
-    WorkPage.show();    
+    WorkPage.show();
     Section.left();
   }
 });
