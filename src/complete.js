@@ -4,11 +4,11 @@ function Complete() {
 
 Complete.prototype = extend(Button, {
   down: function() {
-    this.elem.className += ' clicked';
+    this.elem.classList.add('clicked');
   },
 
   up: function() {
-    this.elem.className = null;
+    this.elem.classList.remove('clicked');
     WorkPage.saveSession();
   }
 });

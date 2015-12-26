@@ -239,7 +239,7 @@ function getMonthName(date, short) {
 var SessionList = {
   init: function() {
     this.sessions = [];
-    this.base = document.getElementById('main');
+    this.base = document.getElementById('log-content');
 
     Session.getAll(this.got.bind(this));
   },
@@ -259,30 +259,25 @@ var SessionList = {
     var ul = document.createElement('ul');
     ul.className = 'sessions';
 
-    this.sessions.forEach(function(session) {
-      var li = document.createElement('li');
+    var t = document.getElementById('session-template');
+
+    this.sessions.forEach(function(session){
+      var li = t.content.querySelector('li');
       li.id = session.id;
       li.onclick = function(){
-        SessionPage.show(session);
+        console.log('you clicked', session.id);
       };
 
       var date = session.beginDate;
-      var left = document.createElement('span');
-      left.className = 'date';
+      var left = t.content.querySelector('.date');
       left.textContent = getMonthName(date, true)
         + ' ' + date.getDate();
 
-      var right = document.createElement('span');
-      right.className = 'time';
+      var right = t.content.querySelector('.time');
       right.textContent = session.time.toString();
 
-      var rule = document.createElement('hr');
-
-      li.appendChild(left);
-      li.appendChild(right);
-      li.appendChild(rule);
-
-      ul.appendChild(li);
+      var clone = document.importNode(t.content, true);
+      ul.appendChild(clone);
     });
 
     base.appendChild(ul);
@@ -315,11 +310,12 @@ var SessionPage = {
 
 var WorkPage = {
   init: function() {
+    this.base = document.getElementById('work-content');
     this.elem = document.getElementById('current-time');
 
     if(!this.timer)
       this.timer = new Timer();
-    
+
     this.start = new Start();
     this.start.listen();
 
@@ -359,7 +355,7 @@ var WorkPage = {
 
   restore: function() {
     var running = localStorage['running'] === 'true';
-             
+
     var state = JSON.parse(localStorage['prev']);
     if(!state)
       return;
@@ -369,7 +365,7 @@ var WorkPage = {
     time.hours = state.hours || 0;
     time.minutes = state.minutes || 0;
     time.seconds = state.seconds || 0;
- 
+
     if(running) {
       this.timer.begin = this.cachedBeginDate;
       this.timer.resume();
@@ -441,29 +437,13 @@ var WorkPage = {
   },
 
   show: function() {
-    var base = document.getElementById('main');
+    var base = this.base;
     base.innerHTML = '';
 
-    var action = document.createElement('section');
-    action.className = 'action';
+    var t = document.getElementById('work-template');
+    var clone = document.importNode(t.content, true);
 
-    var start = document.createElement('a');
-    start.name = 'start';
-    start.textContent = 'Start';
-
-    var end = document.createElement('a');
-    end.name = 'end';
-    end.textContent = 'End';
-
-    action.appendChild(start);
-    action.appendChild(end);
-
-    var current = document.createElement('div');
-    current.id = current.className = 'current-time';
-
-    base.appendChild(action);
-    base.appendChild(current);
-
+    base.appendChild(clone);
     this.inited ? this.resume() : this.init();
   },
 
@@ -485,24 +465,12 @@ function Button(elem) {
 }
 
 Button.prototype = {
-  events: function(action) {
-    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-      action(evt);
-    });
-  },
-
   listen: function() {
-    var self = this;
-    self.events(function(evt) {
-      self.elem.addEventListener(evt, self);
-    });
+    this.elem.addEventListener('click', this);
   },
 
   unload: function() {
-    var self = this;
-    self.events(function(evt) {
-      self.elem.removeEventListener(evt, self);
-    });
+    this.elem.removeEventListener('click', this);
   },
 
   down: function() { },
@@ -516,25 +484,12 @@ Button.prototype = {
         break;
       case 'touchend':
       case 'mouseup':
+      case 'click':
         this.up();
         break;
     }
 
-    e.preventDefault();
-  }
-};
-
-var Section = {
-  init: function() {
-    this.elem = document.getElementById('active');
-  },
-
-  left: function() {
-    this.elem.className = 'left';
-  },
-
-  right: function() {
-    this.elem.className = 'right';
+    //e.preventDefault();
   }
 };
 
@@ -545,7 +500,6 @@ function Work() {
 Work.prototype = extend(Button, {
   up: function() {
     WorkPage.show();
-    Section.left();
   }
 });
 
@@ -559,7 +513,6 @@ Log.prototype = extend(Button, {
     WorkPage.unload();
 
     SessionList.show();
-    Section.right();
   }
 });
 
@@ -578,16 +531,17 @@ Start.prototype = extend(Button, {
 
   start: function() {
     this.setBtnText("Stop");
-    this.elem.className = 'started';
+    this.elem.classList.add('started');
   },
 
   stop: function() {
     this.setBtnText("Start");
-    this.elem.className = null;
+    this.elem.classList.remove('started');
   },
 
   up: function() {
-    this.elem.className = this.elem.className.replace(' clicked', '');
+    //this.elem.className = this.elem.className.replace(' clicked', '');
+    //this.elem.classList.remove('clicked');
     WorkPage.startPressed();
   }
 });
@@ -598,11 +552,11 @@ function Complete() {
 
 Complete.prototype = extend(Button, {
   down: function() {
-    this.elem.className += ' clicked';
+    this.elem.classList.add('clicked');
   },
 
   up: function() {
-    this.elem.className = null;
+    this.elem.classList.remove('clicked');
     WorkPage.saveSession();
   }
 });
@@ -630,7 +584,6 @@ var App = {};
 
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
-  Section.init();
   WorkPage.init();
   SessionList.init();
   SessionPage.init();

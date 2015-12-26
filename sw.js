@@ -1,3 +1,5 @@
+// version 2
+
 importScripts('/js/cache-polyfill.js');
 
 self.addEventListener('install', function(e) {

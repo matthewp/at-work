@@ -1,10 +1,11 @@
 var WorkPage = {
   init: function() {
+    this.base = document.getElementById('work-content');
     this.elem = document.getElementById('current-time');
 
     if(!this.timer)
       this.timer = new Timer();
-    
+
     this.start = new Start();
     this.start.listen();
 
@@ -44,7 +45,7 @@ var WorkPage = {
 
   restore: function() {
     var running = localStorage['running'] === 'true';
-             
+
     var state = JSON.parse(localStorage['prev']);
     if(!state)
       return;
@@ -54,7 +55,7 @@ var WorkPage = {
     time.hours = state.hours || 0;
     time.minutes = state.minutes || 0;
     time.seconds = state.seconds || 0;
- 
+
     if(running) {
       this.timer.begin = this.cachedBeginDate;
       this.timer.resume();
@@ -126,29 +127,13 @@ var WorkPage = {
   },
 
   show: function() {
-    var base = document.getElementById('main');
+    var base = this.base;
     base.innerHTML = '';
 
-    var action = document.createElement('section');
-    action.className = 'action';
+    var t = document.getElementById('work-template');
+    var clone = document.importNode(t.content, true);
 
-    var start = document.createElement('a');
-    start.name = 'start';
-    start.textContent = 'Start';
-
-    var end = document.createElement('a');
-    end.name = 'end';
-    end.textContent = 'End';
-
-    action.appendChild(start);
-    action.appendChild(end);
-
-    var current = document.createElement('div');
-    current.id = current.className = 'current-time';
-
-    base.appendChild(action);
-    base.appendChild(current);
-
+    base.appendChild(clone);
     this.inited ? this.resume() : this.init();
   },
 

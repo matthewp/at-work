@@ -11,7 +11,6 @@ modules = src/database.js\
           src/session_page.js\
           src/work_page.js\
           src/button.js\
-          src/section.js\
           src/work.js\
           src/log.js\
           src/start.js\

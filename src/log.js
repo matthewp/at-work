@@ -8,6 +8,5 @@ Log.prototype = extend(Button, {
     WorkPage.unload();
 
     SessionList.show();
-    Section.right();
   }
 });

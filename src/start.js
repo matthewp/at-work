@@ -13,16 +13,17 @@ Start.prototype = extend(Button, {
 
   start: function() {
     this.setBtnText("Stop");
-    this.elem.className = 'started';
+    this.elem.classList.add('started');
   },
 
   stop: function() {
     this.setBtnText("Start");
-    this.elem.className = null;
+    this.elem.classList.remove('started');
   },
 
   up: function() {
-    this.elem.className = this.elem.className.replace(' clicked', '');
+    //this.elem.className = this.elem.className.replace(' clicked', '');
+    //this.elem.classList.remove('clicked');
     WorkPage.startPressed();
   }
 });

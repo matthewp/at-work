@@ -13,7 +13,7 @@ function getMonthName(date, short) {
 var SessionList = {
   init: function() {
     this.sessions = [];
-    this.base = document.getElementById('main');
+    this.base = document.getElementById('log-content');
 
     Session.getAll(this.got.bind(this));
   },
@@ -33,30 +33,25 @@ var SessionList = {
     var ul = document.createElement('ul');
     ul.className = 'sessions';
 
-    this.sessions.forEach(function(session) {
-      var li = document.createElement('li');
+    var t = document.getElementById('session-template');
+
+    this.sessions.forEach(function(session){
+      var li = t.content.querySelector('li');
       li.id = session.id;
       li.onclick = function(){
-        SessionPage.show(session);
+        console.log('you clicked', session.id);
       };
 
       var date = session.beginDate;
-      var left = document.createElement('span');
-      left.className = 'date';
+      var left = t.content.querySelector('.date');
       left.textContent = getMonthName(date, true)
         + ' ' + date.getDate();
 
-      var right = document.createElement('span');
-      right.className = 'time';
+      var right = t.content.querySelector('.time');
       right.textContent = session.time.toString();
 
-      var rule = document.createElement('hr');
-
-      li.appendChild(left);
-      li.appendChild(right);
-      li.appendChild(rule);
-
-      ul.appendChild(li);
+      var clone = document.importNode(t.content, true);
+      ul.appendChild(clone);
     });
 
     base.appendChild(ul);

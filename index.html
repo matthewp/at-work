@@ -6,30 +6,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>At Work</title>
   <link rel="manifest" href="manifest.json">
-	<link rel="stylesheet" href="style/atwork.css" type="text/css" />
+  <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
+  <script src="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="style/atwork.css" />
   <link rel="apple-touch-icon" href="style/icons/atwork57.png" />
   <link rel="apple-touch-icon" sizes="72x72" href="style/icons/atwork72.png" />
   <link rel="apple-touch-icon" sizes="114x114" href="style/icons/atwork114.png" />
 </head>
 <body>
-  <nav>
-    <div id="active" class="left"></div>
-    <div id="buttons">
-      <span id="work">Work</span>
-      <span></span>
-      <span id="log">Log</span>
+  <!-- Simple header with fixed tabs. -->
+  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+              mdl-layout--fixed-tabs">
+    <header class="mdl-layout__header">
+      <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">At Work</span>
+      </div>
+      <!-- Tabs -->
+      <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+        <a id="work" href="#fixed-tab-1" class="mdl-layout__tab is-active">Work</a>
+        <a id="log" href="#fixed-tab-2" class="mdl-layout__tab">Log</a>
+      </div>
+    </header>
+    <div class="mdl-layout__drawer">
+      <span class="mdl-layout-title">Title</span>
     </div>
-  </nav>
-
-  <div id="main">
-    <section class="action">
-      <a name="start">Start</a>
-      <a name="end">End</a>
-    </section>
-    <div id="current-time" class="current-time">
-      <!-- Current time here -->
-    </div>
+    <main class="mdl-layout__content mdl-color--grey-100">
+      <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
+        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
+          <div id="work-content" class="page-content">
+            <h4 id="current-time" class="current-time">
+              <!-- Current time here -->
+            </h4>
+            <section class="action">
+              <div>
+                <button name="start"
+                        class="mdl-button mdl-js-button mdl-button--raised">
+                  Start
+                </button>
+              </div>
+              <div>
+                <button name="end"
+                        class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+                  End
+                </button>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+      <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+        <div id="log-content" class="page-content"><!-- Your content goes here -->two</div>
+      </section>
+    </main>
   </div>
+
+  <template id="work-template">
+    <h4 id="current-time" class="current-time">
+      <!-- Current time here -->
+    </h4>
+    <section class="action">
+      <div>
+        <button name="start"
+                class="mdl-button mdl-js-button mdl-button--raised">
+          Start
+        </button>
+      </div>
+      <div>
+        <button name="end"
+                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+          End
+        </button>
+      </div>
+    </section>
+  </template>
+  <template id="session-template">
+    <li>
+      <span class="date"></span>
+      <span class="time"></span>
+      <hr/>
+    </li>
+  </template>
   <script src="js/atwork.js"></script>
   <script>
     if('serviceWorker' in navigator) {
