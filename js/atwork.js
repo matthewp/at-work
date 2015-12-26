@@ -46,8 +46,9 @@ function openDB(callback, context) {
   };
 }
 
-function extend(parent, proto) {
-  var base = Object.create(parent.prototype);
+function extend(parent, proto, notAConstructor) {
+  var toExtend = notAConstructor === true ? parent : parent.prototype;
+  var base = Object.create(toExtend);
 
   Object.keys(proto).forEach(function(key) {
     base[key] = proto[key];
@@ -55,6 +56,18 @@ function extend(parent, proto) {
 
   return base;
 }
+
+var visibility = {
+  show: function(elem) {
+    elem.style.display = elem._oldDisplay || 'block';
+    elem._oldDisplay = undefined;
+  },
+
+  hide: function(elem) {
+    elem._oldDisplay = elem.style.display;
+    elem.style.display = 'none';
+  }
+};
 
 function TimeSpan(ms) {
   if(ms) {
@@ -122,6 +135,21 @@ Timer.prototype = {
   }
 };
 
+function Listener() {
+  this.listeners = [];
+}
+
+Listener.prototype.addListener = function(listener) {
+  this.listeners.push(listener);
+};
+
+Listener.prototype.unload = function(){
+  this.listeners.forEach(function(listener){
+    listener.unload();
+  });
+  this.listeners = [];
+};
+
 var transPerm = {
   READ: 'readonly',
   WRITE: 'readwrite'
@@ -171,6 +199,31 @@ Session.prototype = {
         console.log(e);
       };
     }, this);
+  },
+
+  destroy: function() {
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      openDB(function(db) {
+        var trans = db.transaction([OS_NAME], transPerm.WRITE);
+
+        trans.onerror = function(e) {
+          console.error(e);
+        };
+
+        var os = trans.objectStore(OS_NAME);
+        var req = os.delete(this.id);
+        req.onsuccess = function() {
+          console.log('Deleted', self.id);
+          resolve();
+        };
+        req.onerror = function(e) {
+          console.error(e);
+          reject(e);
+        };
+      }, self);
+    });
   }
 };
 
@@ -203,6 +256,12 @@ Session.getAll = function(callback) {
       sessions.push(session);
       cursor.continue();
     };
+  });
+};
+
+Session.getAllP = function() {
+  return new Promise(function(resolve) {
+    Session.getAll(resolve);
   });
 };
 
@@ -240,8 +299,15 @@ var SessionList = {
   init: function() {
     this.sessions = [];
     this.base = document.getElementById('log-content');
+    this.listeners = [];
 
     Session.getAll(this.got.bind(this));
+  },
+
+  unload: function() {
+    this.listeners.forEach(function(button) { button.unload(); });
+    this.listeners = [];
+    SessionListActions.unload();
   },
 
   got: function(sessions) {
@@ -250,6 +316,22 @@ var SessionList = {
 
   add: function(session) {
     this.sessions.push(session);
+  },
+
+  itemsSelected: function(){
+    var base = this.base;
+    var checks = base.querySelectorAll('.sessionlist-item input');
+    var selected = [].some.call(checks, function(elem) {
+      return !!elem.checked;
+    });
+
+    if(selected) {
+      // TODO show the buttons
+      SessionListActions.show();
+    } else {
+      // Don't show the buttons
+      SessionListActions.unload();
+    }
   },
 
   show: function() {
@@ -262,23 +344,31 @@ var SessionList = {
     var t = document.getElementById('session-template');
 
     this.sessions.forEach(function(session){
-      var li = t.content.querySelector('li');
+      var clone = document.importNode(t.content, true);
+      var li = clone.querySelector('li');
       li.id = session.id;
-      li.onclick = function(){
-        console.log('you clicked', session.id);
-      };
+      this.listeners.push(new ListSessionButton(li, session).listen());
+
+      var inputId = 'cb-' + session.id;
+      var label = li.querySelector('label');
+      label.setAttribute('for', inputId);
+      this.listeners.push(new SessionCheckbox(label, this).listen());
+
+      var input = li.querySelector('label input');
+      input.id = inputId;
+      input.dataset.id = session.id;
+      componentHandler.upgradeElement(label);
 
       var date = session.beginDate;
-      var left = t.content.querySelector('.date');
+      var left = clone.querySelector('.date');
       left.textContent = getMonthName(date, true)
         + ' ' + date.getDate();
 
-      var right = t.content.querySelector('.time');
+      var right = clone.querySelector('.time');
       right.textContent = session.time.toString();
 
-      var clone = document.importNode(t.content, true);
       ul.appendChild(clone);
-    });
+    }.bind(this));
 
     base.appendChild(ul);
 
@@ -288,23 +378,21 @@ var SessionList = {
 
 var SessionPage = {
   init: function() {
-    this.base = document.getElementById('main');
+    this.base = document.getElementsByTagName('main')[0];
   },
 
   show: function(session) {
     var base = this.base;
     base.innerHTML = '';
 
-    var container = document.createElement('section');
-    container.className = 'session-page';
+    var t = document.getElementById('sessionpage-template');
+    var clone = document.importNode(t.content, true);
 
     var date = session.beginDate;
-    var left = document.createElement('span');
-    left.className = 'date';
-    left.textContent = getMonthName(date, true) + ' ' + date.getDate();
+    clone.querySelector('span').textContent = getMonthName(date, true) +
+      ' ' + date.getDate();
 
-    container.appendChild(left);
-    base.appendChild(container);
+    base.appendChild(clone);
   }
 };
 
@@ -467,10 +555,12 @@ function Button(elem) {
 Button.prototype = {
   listen: function() {
     this.elem.addEventListener('click', this);
+    return this;
   },
 
   unload: function() {
     this.elem.removeEventListener('click', this);
+    return this;
   },
 
   down: function() { },
@@ -480,12 +570,12 @@ Button.prototype = {
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        this.down();
+        this.down(e);
         break;
       case 'touchend':
       case 'mouseup':
       case 'click':
-        this.up();
+        this.up(e);
         break;
     }
 
@@ -515,6 +605,149 @@ Log.prototype = extend(Button, {
     SessionList.show();
   }
 });
+
+function ListSessionButton(elem, session){
+  this.elem = elem;
+  this.session = session;
+}
+
+ListSessionButton.prototype = extend(Button, {
+  up: function(){
+    visibility.hide(mainTabs());
+    SessionList.unload();
+    SessionPage.show(this.session);
+  }
+});
+
+function SessionCheckbox(elem, SessionList) {
+  this.elem = elem;
+  this.SessionList = SessionList;
+}
+
+SessionCheckbox.prototype = extend(Button, {
+  up: function(ev){
+    ev.stopPropagation();
+
+    SessionList.itemsSelected(ev);
+  }
+});
+
+// TODO not sure what this will do, but this is action items.
+var Actions = extend(Listener, {
+  init: function() {
+    Listener.call(this);
+  },
+
+  upgrade: function(elem){
+    var buttons = elem.querySelectorAll('button') || [];
+    [].forEach(function(button){
+      componentHandler.upgradeElement(button);
+    });
+  }
+});
+
+function getSelectedSessions() {
+    var base = SessionList.base;
+    var checks = base.querySelectorAll('.sessionlist-item input');
+    var selected = [].filter.call(checks, function(elem){
+      return !!elem.checked;
+    }).reduce(function(s, elem) {
+      s[elem.dataset.id] = true;
+      return s;
+    }, {});
+
+    var sessions = SessionList.sessions.filter(function(session){
+      return !!selected[session.id];
+    });
+
+    return sessions;
+}
+
+function MergeSessionsButton(elem) {
+  this.elem = elem;
+}
+
+MergeSessionsButton.prototype = extend(Button, {
+  up: function(){
+    this.mergeSessions();
+  },
+
+  mergeSessions: function() {
+    var sessions = getSelectedSessions();
+
+    // TODO sessions is an Array of Session objects. Merge them some how.
+  }
+});
+
+function DeleteSessionsButton(elem) {
+  this.elem = elem;
+}
+
+DeleteSessionsButton.prototype = extend(Button, {
+  up: function() {
+    this.deleteSessions()
+      .then(function() {
+        return Session.getAllP();
+      })
+      .then(function(sessions){
+        SessionList.unload();
+        SessionList.got(sessions);
+        SessionList.show();
+      });
+  },
+
+  deleteSessions: function() {
+    var sessions = getSelectedSessions();
+    var promises = sessions.map(function(session) {
+      return session.destroy();
+    });
+    return Promise.all(promises);
+  }
+});
+
+var SessionListActions = extend(Actions, {
+
+  init: function() {
+    if(this.inited) return;
+    Actions.init.call(this);
+    this.base = document.getElementById('actionbar');
+    this.inited = true;
+  },
+
+  show: function(session) {
+    if(this.showing) return;
+    if(!this.inited) this.init();
+
+    var base = this.base;
+    base.innerHTML = '';
+
+    var t = document.getElementById('sessionlistaction-template');
+    var clone = document.importNode(t.content, true);
+
+    this.addListener(
+      new MergeSessionsButton(
+        clone.getElementById('mergesession-button')).listen()
+    );
+
+    this.addListener(
+      new DeleteSessionsButton(
+        clone.getElementById('deletesession-button')).listen()
+    );
+
+    this.upgrade(clone);
+    base.appendChild(clone);
+    this.showing = true;
+  },
+
+  unload: function() {
+    if(!this.inited) return;
+
+    Actions.unload.call(this);
+    this.base.innerHTML = '';
+    this.showing = false;
+  }
+
+}, true);
 
 function Start() {
   this.elem = document.getElementsByName('start')[0];
@@ -560,6 +793,10 @@ Complete.prototype = extend(Button, {
     WorkPage.saveSession();
   }
 });
+
+var mainTabs = function(){
+  return document.getElementById('main-tabs').parentNode;
+};
 
 var Navigator = {
   go: function(state){

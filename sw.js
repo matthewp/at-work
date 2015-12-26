@@ -1,4 +1,5 @@
-// version 2
+var VERSION = 2.1;
+console.log("Service Worker version", VERSION);
 
 importScripts('/js/cache-polyfill.js');
 

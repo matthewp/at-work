@@ -22,9 +22,13 @@
       <div class="mdl-layout__header-row">
         <!-- Title -->
         <span class="mdl-layout-title">At Work</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+        <!-- Navigation -->
+        <nav id="actionbar" class="mdl-navigation"></nav>
       </div>
       <!-- Tabs -->
-      <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+      <div id="main-tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
         <a id="work" href="#fixed-tab-1" class="mdl-layout__tab is-active">Work</a>
         <a id="log" href="#fixed-tab-2" class="mdl-layout__tab">Log</a>
       </div>
@@ -34,7 +38,7 @@
     </div>
     <main class="mdl-layout__content mdl-color--grey-100">
       <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
-        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
+       <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
           <div id="work-content" class="page-content">
             <h4 id="current-time" class="current-time">
               <!-- Current time here -->
@@ -82,11 +86,31 @@
     </section>
   </template>
   <template id="session-template">
-    <li>
-      <span class="date"></span>
-      <span class="time"></span>
+    <li class="sessionlist-item">
+      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+        <input type="checkbox" class="mdl-checkbox__input">
+      </label>
+      <time>
+        <span class="date"></span>
+        <span class="time"></span>
+      </time>
       <hr/>
     </li>
+  </template>
+  <template id="sessionlistaction-template">
+    <button id="mergesession-button"
+            class="mdl-button mdl-js-button mdl-button--icon">
+      <i class="material-icons">merge_type</i>
+    </button>
+    <button id="deletesession-button"
+            class="mdl-button mdl-js-button mdl-button--icon">
+      <i class="material-icons">delete</i>
+    </button>
+  </template>
+  <template id="sessionpage-template">
+    <section class="session-page">
+      <span class="date"></span>
+    </section>
   </template>
   <script src="js/atwork.js"></script>
   <script>

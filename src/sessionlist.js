@@ -14,8 +14,15 @@ var SessionList = {
   init: function() {
     this.sessions = [];
     this.base = document.getElementById('log-content');
+    this.listeners = [];
 
     Session.getAll(this.got.bind(this));
+  },
+
+  unload: function() {
+    this.listeners.forEach(function(button) { button.unload(); });
+    this.listeners = [];
+    SessionListActions.unload();
   },
 
   got: function(sessions) {
@@ -24,6 +31,22 @@ var SessionList = {
 
   add: function(session) {
     this.sessions.push(session);
+  },
+
+  itemsSelected: function(){
+    var base = this.base;
+    var checks = base.querySelectorAll('.sessionlist-item input');
+    var selected = [].some.call(checks, function(elem) {
+      return !!elem.checked;
+    });
+
+    if(selected) {
+      // TODO show the buttons
+      SessionListActions.show();
+    } else {
+      // Don't show the buttons
+      SessionListActions.unload();
+    }
   },
 
   show: function() {
@@ -36,23 +59,31 @@ var SessionList = {
     var t = document.getElementById('session-template');
 
     this.sessions.forEach(function(session){
-      var li = t.content.querySelector('li');
+      var clone = document.importNode(t.content, true);
+      var li = clone.querySelector('li');
       li.id = session.id;
-      li.onclick = function(){
-        console.log('you clicked', session.id);
-      };
+      this.listeners.push(new ListSessionButton(li, session).listen());
+
+      var inputId = 'cb-' + session.id;
+      var label = li.querySelector('label');
+      label.setAttribute('for', inputId);
+      this.listeners.push(new SessionCheckbox(label, this).listen());
+
+      var input = li.querySelector('label input');
+      input.id = inputId;
+      input.dataset.id = session.id;
+      componentHandler.upgradeElement(label);
 
       var date = session.beginDate;
-      var left = t.content.querySelector('.date');
+      var left = clone.querySelector('.date');
       left.textContent = getMonthName(date, true)
         + ' ' + date.getDate();
 
-      var right = t.content.querySelector('.time');
+      var right = clone.querySelector('.time');
       right.textContent = session.time.toString();
 
-      var clone = document.importNode(t.content, true);
       ul.appendChild(clone);
-    });
+    }.bind(this));
 
     base.appendChild(ul);
 

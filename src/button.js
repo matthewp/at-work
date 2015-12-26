@@ -5,10 +5,12 @@ function Button(elem) {
 Button.prototype = {
   listen: function() {
     this.elem.addEventListener('click', this);
+    return this;
   },
 
   unload: function() {
     this.elem.removeEventListener('click', this);
+    return this;
   },
 
   down: function() { },
@@ -18,12 +20,12 @@ Button.prototype = {
     switch(e.type) {
       case 'touchstart':
       case 'mousedown':
-        this.down();
+        this.down(e);
         break;
       case 'touchend':
       case 'mouseup':
       case 'click':
-        this.up();
+        this.up(e);
         break;
     }
 

@@ -47,6 +47,31 @@ Session.prototype = {
         console.log(e);
       };
     }, this);
+  },
+
+  destroy: function() {
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+      openDB(function(db) {
+        var trans = db.transaction([OS_NAME], transPerm.WRITE);
+
+        trans.onerror = function(e) {
+          console.error(e);
+        };
+
+        var os = trans.objectStore(OS_NAME);
+        var req = os.delete(this.id);
+        req.onsuccess = function() {
+          console.log('Deleted', self.id);
+          resolve();
+        };
+        req.onerror = function(e) {
+          console.error(e);
+          reject(e);
+        };
+      }, self);
+    });
   }
 };
 
@@ -79,6 +104,12 @@ Session.getAll = function(callback) {
       sessions.push(session);
       cursor.continue();
     };
+  });
+};
+
+Session.getAllP = function() {
+  return new Promise(function(resolve) {
+    Session.getAll(resolve);
   });
 };
 
