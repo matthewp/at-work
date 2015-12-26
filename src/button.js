@@ -3,24 +3,12 @@ function Button(elem) {
 }
 
 Button.prototype = {
-  events: function(action) {
-    [ 'touchstart', 'touchend', 'mousedown', 'mouseup' ].forEach(function(evt) {
-      action(evt);
-    });
-  },
-
   listen: function() {
-    var self = this;
-    self.events(function(evt) {
-      self.elem.addEventListener(evt, self);
-    });
+    this.elem.addEventListener('click', this);
   },
 
   unload: function() {
-    var self = this;
-    self.events(function(evt) {
-      self.elem.removeEventListener(evt, self);
-    });
+    this.elem.removeEventListener('click', this);
   },
 
   down: function() { },
@@ -34,10 +22,11 @@ Button.prototype = {
         break;
       case 'touchend':
       case 'mouseup':
+      case 'click':
         this.up();
         break;
     }
 
-    e.preventDefault();
+    //e.preventDefault();
   }
 };

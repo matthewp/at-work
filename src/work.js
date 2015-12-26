@@ -5,6 +5,5 @@ function Work() {
 Work.prototype = extend(Button, {
   up: function() {
     WorkPage.show();
-    Section.left();
   }
 });
