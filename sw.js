@@ -1,4 +1,4 @@
-var VERSION = 2.4;
+var VERSION = 2.5;
 console.log("Service Worker version", VERSION);
 
 importScripts('/js/cache-polyfill.js');
@@ -44,8 +44,6 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  console.log(event.request.url);
-
   event.respondWith(
     caches.match(event.request).then(function(response) {
       return response || fetch(event.request);
