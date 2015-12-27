@@ -389,10 +389,14 @@ var SessionPage = {
     var clone = document.importNode(t.content, true);
 
     var date = session.beginDate;
-    clone.querySelector('span').textContent = getMonthName(date, true) +
+    clone.querySelector('.date').textContent = getMonthName(date) +
       ' ' + date.getDate();
 
+    clone.querySelector('.time').textContent = session.time.toString();
+
     base.appendChild(clone);
+
+    Navigator.save({page:'session'}, null, "/session/" + session.id);
   }
 };
 
@@ -588,8 +592,12 @@ function Work() {
 }
 
 Work.prototype = extend(Button, {
-  up: function() {
+  up: function(fromEvent) {
     WorkPage.show();
+
+    if(fromEvent) {
+      this.elem.show();
+    }
   }
 });
 
@@ -598,11 +606,15 @@ function Log() {
 }
 
 Log.prototype = extend(Button, {
-  up: function() {
+  up: function(fromEvent) {
     WorkPage.pause();
     WorkPage.unload();
 
     SessionList.show();
+
+    if(fromEvent) {
+      this.elem.show();
+    }
   }
 });
 
@@ -616,6 +628,7 @@ ListSessionButton.prototype = extend(Button, {
     visibility.hide(mainTabs());
     SessionList.unload();
     SessionPage.show(this.session);
+    DrawerButton.back();
   }
 });
 
@@ -798,22 +811,56 @@ var mainTabs = function(){
   return document.getElementById('main-tabs').parentNode;
 };
 
+var DrawerButton = {
+  init: function() {
+    this.base = document.querySelector('.mdl-layout__drawer-button');
+  },
+
+  drawer: function() {
+    this.setIcon('menu');
+    this.base.removeEventListener('click', this);
+  },
+
+  back: function() {
+    this.setIcon('arrow_back');
+    this.base.addEventListener('click', this, true);
+  },
+
+  handleEvent: function(e) {
+    switch(e.type) {
+      case 'click':
+        e.stopPropagation();
+        history.back();
+        break;
+    }
+  },
+
+  setIcon: function(txt) {
+    this.base.querySelector('i').textContent = txt;
+    componentHandler.upgradeElement(this.base);
+  }
+};
+
 var Navigator = {
   go: function(state){
     var page = state.page;
     switch(page) {
       case 'work':
-        App.work.up();
+        App.work.up(true);
         break;
       case 'log':
-        App.log.up();
+        App.log.up(true);
         break;
     }
   },
 
   save: function(state, title, url){
-    return; // current disabled
-    history.pushState(state, title, url);
+    return;
+
+    var currentState = history.state || {};
+    if(state.page !== currentState.page) {
+      history.pushState(state, title, url);
+    }
   }
 };
 
@@ -824,11 +871,17 @@ window.addEventListener('load', function winLoad(e) {
   WorkPage.init();
   SessionList.init();
   SessionPage.init();
+  DrawerButton.init();
   App.work = new Work();
   App.work.listen();
 
   App.log = new Log();
   App.log.listen();
+
+  /*var session = new Session([new TimeSpan(30000)]);
+  session.beginDate = new Date(new Date() - 30000);
+  new ListSessionButton(null, session).up();*/
+
 });
 
 window.addEventListener('popstate', function(e) {

@@ -3,10 +3,14 @@ function Log() {
 }
 
 Log.prototype = extend(Button, {
-  up: function() {
+  up: function(fromEvent) {
     WorkPage.pause();
     WorkPage.unload();
 
     SessionList.show();
+
+    if(fromEvent) {
+      this.elem.show();
+    }
   }
 });

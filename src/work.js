@@ -3,7 +3,11 @@ function Work() {
 }
 
 Work.prototype = extend(Button, {
-  up: function() {
+  up: function(fromEvent) {
     WorkPage.show();
+
+    if(fromEvent) {
+      this.elem.show();
+    }
   }
 });

@@ -8,5 +8,6 @@ ListSessionButton.prototype = extend(Button, {
     visibility.hide(mainTabs());
     SessionList.unload();
     SessionPage.show(this.session);
+    DrawerButton.back();
   }
 });

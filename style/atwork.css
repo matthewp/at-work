@@ -15,6 +15,16 @@
   margin: .4em 0;
 }
 
+.mdl-checkbox__focus-helper,
+.mdl-checkbox__box-outline {
+  width: 20px;
+  height: 20px;
+}
+
+#actionbar button {
+  margin-right: 1em;
+}
+
 /* Sessionlist page */
 .sessions {
   list-style-type: none;
@@ -23,9 +33,19 @@
 
 .sessionlist-item label {
   display: inline;
+  padding-right: 2em;
 }
 
-.sessionlist-item time {
+.sessionlist-item .record {
   line-height: 3em;
+  display: inline-block;
 }
 /* End Sessionlist page */
+
+/* Session page */
+.session-page .date,
+.session-page .time {
+  width: 100%;
+  text-align: center;
+}
+/* End Session page */

@@ -11,9 +11,13 @@ var SessionPage = {
     var clone = document.importNode(t.content, true);
 
     var date = session.beginDate;
-    clone.querySelector('span').textContent = getMonthName(date, true) +
+    clone.querySelector('.date').textContent = getMonthName(date) +
       ' ' + date.getDate();
 
+    clone.querySelector('.time').textContent = session.time.toString();
+
     base.appendChild(clone);
+
+    Navigator.save({page:'session'}, null, "/session/" + session.id);
   }
 };

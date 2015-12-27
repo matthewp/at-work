@@ -22,6 +22,7 @@ modules = src/database.js\
           src/start.js\
           src/complete.js\
           src/main_tabs.js\
+          src/drawer_button.js\
           src/navigator.js\
           src/page_load.js
 
