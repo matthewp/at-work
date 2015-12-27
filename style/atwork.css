@@ -22,7 +22,7 @@
 }
 
 #actionbar button {
-  margin-right: 1em;
+  margin-right: 0.3em;
 }
 
 /* Sessionlist page */
@@ -39,6 +39,8 @@
 .sessionlist-item .record {
   line-height: 3em;
   display: inline-block;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 /* End Sessionlist page */
 
