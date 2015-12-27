@@ -1,4 +1,4 @@
-var VERSION = 2.2;
+var VERSION = 2.3;
 console.log("Service Worker version", VERSION);
 
 importScripts('/js/cache-polyfill.js');
@@ -13,6 +13,8 @@ self.addEventListener('install', function(e) {
 
         // /js
         '/js/atwork.js',
+        '/js/material.min.js',
+        '/js/material.min.js.map',
 
         // /style
         '/style/atwork.css',
