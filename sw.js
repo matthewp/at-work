@@ -1,4 +1,4 @@
-var VERSION = 2.5;
+var VERSION = 2.6;
 console.log("Service Worker version", VERSION);
 
 importScripts('/js/cache-polyfill.js');
