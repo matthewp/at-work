@@ -7,7 +7,7 @@
   <title>At Work</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="https://storage.googleapis.com/code.getmdl.io/1.0.6/material.indigo-pink.min.css">
-  <script src="js/material.min.js"></script>
+  <script src="js/material.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="style/atwork.css" />
   <link rel="apple-touch-icon" href="style/icons/atwork57.png" />
@@ -36,58 +36,13 @@
     <div class="mdl-layout__drawer">
       <span class="mdl-layout-title">Title</span>
     </div>
-    <main class="mdl-layout__content mdl-color--grey-100">
-      <section class="mdl-layout__tab-panel is-active" id="fixed-tab-1">
-       <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
-          <div id="work-content" class="page-content">
-            <h4 id="current-time" class="current-time">
-              <!-- Current time here -->
-            </h4>
-            <section class="action">
-              <div>
-                <button name="start"
-                        class="mdl-button mdl-js-button mdl-button--raised">
-                  Start
-                </button>
-              </div>
-              <div>
-                <button name="end"
-                        class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
-                  End
-                </button>
-              </div>
-            </section>
-          </div>
-        </div>
-      </section>
-      <section class="mdl-layout__tab-panel" id="fixed-tab-2">
-        <div id="log-content" class="page-content"><!-- Your content goes here -->two</div>
-      </section>
-    </main>
+    <main-page class="mdl-layout__content mdl-color--grey-100"></main-page>
   </div>
 
   <template id="main-template">
     <section class="mdl-layout__tab-panel" id="fixed-tab-1">
      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
-        <div id="work-content" class="page-content">
-          <h4 id="current-time" class="current-time">
-            <!-- Current time here -->
-          </h4>
-          <section class="action">
-            <div>
-              <button name="start"
-                      class="mdl-button mdl-js-button mdl-button--raised">
-                Start
-              </button>
-            </div>
-            <div>
-              <button name="end"
-                      class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
-                End
-              </button>
-            </div>
-          </section>
-        </div>
+        <work-page class="page-content"></work-page>
       </div>
     </section>
     <section class="mdl-layout__tab-panel" id="fixed-tab-2">
