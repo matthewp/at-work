@@ -9,6 +9,7 @@ modules = src/database.js\
           src/timer.js\
           src/listener.js\
           src/session.js\
+          src/main_page.js\
           src/sessionlist.js\
           src/session_page.js\
           src/work_page.js\
@@ -21,7 +22,7 @@ modules = src/database.js\
           src/sessionlist_actions.js\
           src/start.js\
           src/complete.js\
-          src/main_tabs.js\
+          src/utils.js\
           src/drawer_button.js\
           src/navigator.js\
           src/page_load.js
@@ -35,3 +36,4 @@ js/atwork.js: ${modules}
     cat >> $@ $$mod && echo ${\n} >> $@ ; \
 	done
 	echo "})();" >> $@
+	esdown - $@ js/aw.js -r

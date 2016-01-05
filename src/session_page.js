@@ -5,7 +5,6 @@ var SessionPage = {
 
   show: function(session) {
     var base = this.base;
-    base.innerHTML = '';
 
     var t = document.getElementById('sessionpage-template');
     var clone = document.importNode(t.content, true);

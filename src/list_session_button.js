@@ -5,7 +5,7 @@ function ListSessionButton(elem, session){
 
 ListSessionButton.prototype = extend(Button, {
   up: function(){
-    visibility.hide(mainTabs());
+    MainPage.hide();
     SessionList.unload();
     SessionPage.show(this.session);
     DrawerButton.back();

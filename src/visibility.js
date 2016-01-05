@@ -7,5 +7,9 @@ var visibility = {
   hide: function(elem) {
     elem._oldDisplay = elem.style.display;
     elem.style.display = 'none';
+  },
+
+  isShowing: function(elem) {
+    return elem.style.display !== 'none';
   }
 };

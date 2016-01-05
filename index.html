@@ -66,6 +66,34 @@
     </main>
   </div>
 
+  <template id="main-template">
+    <section class="mdl-layout__tab-panel" id="fixed-tab-1">
+     <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
+        <div id="work-content" class="page-content">
+          <h4 id="current-time" class="current-time">
+            <!-- Current time here -->
+          </h4>
+          <section class="action">
+            <div>
+              <button name="start"
+                      class="mdl-button mdl-js-button mdl-button--raised">
+                Start
+              </button>
+            </div>
+            <div>
+              <button name="end"
+                      class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
+                End
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </section>
+    <section class="mdl-layout__tab-panel" id="fixed-tab-2">
+      <div id="log-content" class="page-content"><!-- Your content goes here -->two</div>
+    </section>
+  </template>
   <template id="work-template">
     <h4 id="current-time" class="current-time">
       <!-- Current time here -->
@@ -90,10 +118,10 @@
       <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
         <input type="checkbox" class="mdl-checkbox__input">
       </label>
-      <h4 class="record">
+      <h6 class="record">
         <span class="date"></span>
         <span class="time"></span>
-      </h4>
+      </h6>
       <hr/>
     </li>
   </template>

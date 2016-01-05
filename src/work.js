@@ -3,11 +3,11 @@ function Work() {
 }
 
 Work.prototype = extend(Button, {
-  up: function(fromEvent) {
+  up: withMainPage(function(fromEvent) {
     WorkPage.show();
 
-    if(fromEvent) {
+    if(fromEvent === true) {
       this.elem.show();
     }
-  }
+  })
 });
