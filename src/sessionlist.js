@@ -10,6 +10,34 @@ function getMonthName(date, short) {
   return short ? mn.substr(0, 3) : mn;
 }
 
+Bram.element({
+  tag: "session-list",
+  template: "#sessionlist-template",
+  useShadow: false,
+
+  setters: {
+    sessions: function(bind, sessions){
+      bind.list(sessions, 'id', 'template', '.sessions', function(el, session){
+        var date = session.beginDate;
+        el.querySelector('.date').textContent = getMonthName(date, true)
+          + ' ' + date.getDate();
+
+        el.querySelector('.time').textContent = session.time;
+
+        // Upgrade input element
+        var label = el.querySelector('label input');
+        componentHandler.upgradeElement(label);
+
+        var li = el.querySelector('li');
+        var sessionClicked = Rx.Observable.fromEvent(li, 'click')
+          .map(() => ({ page: 'session', data: session }));
+
+        Bram.report(this, sessionClicked, 'page-change');
+      });
+    }
+  }
+});
+
 var SessionList = {
   init: function() {
     this.sessions = [];

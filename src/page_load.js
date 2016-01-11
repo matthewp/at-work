@@ -1,9 +1,6 @@
 window.addEventListener('load', function winLoad(e) {
   window.removeEventListener('load', winLoad);
 
-  MainPage.init();
-});
-
-window.addEventListener('popstate', function(e) {
-  Navigator.go(e.state || {page: 'work'});
+  var sessions = Rx.Observable.fromPromise(Session.getAllP());
+  document.querySelector('session-list').sessions = sessions;
 });

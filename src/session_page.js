@@ -1,22 +1,15 @@
-var SessionPage = {
-  init: function() {
-    this.base = document.getElementsByTagName('main')[0];
-  },
+Bram.element({
+  tag: "session-page",
+  template: "#sessionpage-template",
+  useShadow: false,
 
-  show: function(session) {
-    var base = this.base;
+  setters: {
+    session: function(bind, session){
+      var date = session.beginDate;
+      this.querySelector('.date').textContent = getMonthName(date) +
+        ' ' + date.getDate();
 
-    var t = document.getElementById('sessionpage-template');
-    var clone = document.importNode(t.content, true);
-
-    var date = session.beginDate;
-    clone.querySelector('.date').textContent = getMonthName(date) +
-      ' ' + date.getDate();
-
-    clone.querySelector('.time').textContent = session.time.toString();
-
-    base.appendChild(clone);
-
-    Navigator.save({page:'session'}, null, "/session/" + session.id);
+      this.querySelector('.time').textContent = session.time.toString();
+    }
   }
-};
+});

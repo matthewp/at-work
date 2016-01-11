@@ -2,7 +2,7 @@
   justify-content: center;
 }
 
-#work-content {
+work-page {
   width: 100%;
 }
 
@@ -10,7 +10,7 @@
   text-align: center;
 }
 
-#work-content button {
+work-page button {
   width: 100%;
   margin: .4em 0;
 }

@@ -15,30 +15,39 @@
   <link rel="apple-touch-icon" sizes="114x114" href="style/icons/atwork114.png" />
 </head>
 <body>
-  <!-- Simple header with fixed tabs. -->
-  <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
-              mdl-layout--fixed-tabs">
-    <header class="mdl-layout__header">
-      <div class="mdl-layout__header-row">
-        <!-- Title -->
-        <span class="mdl-layout-title">At Work</span>
-        <!-- Add spacer, to align navigation to the right -->
-        <div class="mdl-layout-spacer"></div>
-        <!-- Navigation -->
-        <nav id="actionbar" class="mdl-navigation"></nav>
-      </div>
-      <!-- Tabs -->
-      <div id="main-tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
-        <a id="work" href="#fixed-tab-1" class="mdl-layout__tab is-active">Work</a>
-        <a id="log" href="#fixed-tab-2" class="mdl-layout__tab">Log</a>
-      </div>
-    </header>
-    <div class="mdl-layout__drawer">
-      <span class="mdl-layout-title">Title</span>
-    </div>
-    <main-page class="mdl-layout__content mdl-color--grey-100"></main-page>
-  </div>
+  <at-work></at-work>
 
+  <!-- Simple header with fixed tabs. -->
+  <template id="atwork-template">
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header
+                mdl-layout--fixed-tabs">
+      <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+          <!-- Title -->
+          <span class="mdl-layout-title">At Work</span>
+          <!-- Add spacer, to align navigation to the right -->
+          <div class="mdl-layout-spacer"></div>
+          <!-- Navigation -->
+          <nav id="actionbar" class="mdl-navigation"></nav>
+        </div>
+        <!-- Tabs -->
+        <div id="main-tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
+          <a id="work" href="#fixed-tab-1" class="mdl-layout__tab is-active">Work</a>
+          <a id="log" href="#fixed-tab-2" class="mdl-layout__tab">Log</a>
+        </div>
+      </header>
+      <div class="mdl-layout__drawer">
+        <span class="mdl-layout-title">Title</span>
+      </div>
+      <main-page class="mdl-layout__content mdl-color--grey-100"></main-page>
+    </div>
+    <template id="mainpage-tag-template">
+      <main-page class="mdl-layout__content mdl-color--grey-100"></main-page>
+    </template>
+    <template id="session-tag-template">
+      <session-page class="mdl-layout__content mdl-color--grey-100"></session-page>
+    </template>
+  </template>
   <template id="main-template">
     <section class="mdl-layout__tab-panel" id="fixed-tab-1">
      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid work-container">
@@ -46,7 +55,9 @@
       </div>
     </section>
     <section class="mdl-layout__tab-panel" id="fixed-tab-2">
-      <div id="log-content" class="page-content"><!-- Your content goes here -->two</div>
+      <div id="log-content" class="page-content">
+        <session-list></session-list>
+      </div>
     </section>
   </template>
   <template id="work-template">
@@ -56,29 +67,29 @@
     <section class="action">
       <div>
         <button name="start"
-                class="mdl-button mdl-js-button mdl-button--raised">
-          Start
-        </button>
+                class="mdl-button mdl-js-button mdl-button--raised">Start</button>
       </div>
       <div>
         <button name="end"
-                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">
-          End
-        </button>
+                class="mdl-button mdl-js-button mdl-button--raised mdl-button--accent">End</button>
       </div>
     </section>
   </template>
-  <template id="session-template">
-    <li class="sessionlist-item">
-      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-        <input type="checkbox" class="mdl-checkbox__input">
-      </label>
-      <h6 class="record">
-        <span class="date"></span>
-        <span class="time"></span>
-      </h6>
-      <hr/>
-    </li>
+  <template id="sessionlist-template">
+    <template>
+      <li class="sessionlist-item">
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+          <input type="checkbox" class="mdl-checkbox__input">
+        </label>
+        <h6 class="record">
+          <span class="date"></span>
+          <span class="time"></span>
+        </h6>
+        <hr/>
+      </li>
+    </template>
+
+    <ul class="sessions"></ul>
   </template>
   <template id="sessionlistaction-template">
     <button id="mergesession-button"
@@ -100,6 +111,7 @@
       </div>
     </section>
   </template>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.all.js"></script>
   <script src="js/atwork.js"></script>
   <script>
     if('serviceWorker' in navigator) {

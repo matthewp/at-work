@@ -12,20 +12,17 @@ modules = js/bram.js\
           src/session.js\
           src/button.js\
           src/work.js\
-          src/log.js\
-          src/start.js\
           src/work_page.js\
           src/main_page.js\
           src/sessionlist.js\
           src/session_page.js\
+          src/at_work.js\
           src/list_session_button.js\
           src/session_checkbox.js\
           src/actions.js\
           src/sessionlist_actions.js\
-          src/complete.js\
           src/utils.js\
           src/drawer_button.js\
-          src/navigator.js\
           src/page_load.js
 
 js/atwork.js: ${modules}
@@ -37,3 +34,8 @@ js/atwork.js: ${modules}
     cat >> $@ $$mod && echo ${\n} >> $@ ; \
 	done
 	echo "})();" >> $@
+
+all: js/atwork.js
+
+watch:
+	find src -name "*.js" | entr make all
