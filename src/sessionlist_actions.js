@@ -1,3 +1,20 @@
+Bram.element({
+  tag: 'sessionlist-action-bar',
+  template: '#sessionlistaction-template',
+  useShadow: false,
+
+  created: function(){
+    var del = this.querySelector('#deletesession-button');
+    var delEvents = Rx.Observable.fromEvent(del, 'click');
+
+    delEvents.map(() => this.sessions)
+      .map(sessions => {
+        debugger;
+      })
+      .subscribe();
+  }
+})
+
 function getSelectedSessions() {
     var base = SessionList.base;
     var checks = base.querySelectorAll('.sessionlist-item input');

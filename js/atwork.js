@@ -7,36 +7,69 @@
 'use strict';
 var Bram = {};
 
-var INTERNAL_SETTERS = typeof Symbol === "function" ? Symbol("[[ComponentSetters]]") : "[[ComponentSetters]]";
+var supportsSymbol = typeof Symbol === "function";
+var INTERNAL_PROPS = supportsSymbol ? Symbol("[[ObservableProps]]") : "[[ObservableProps]]";
+var INTERNAL_PROPIDS = supportsSymbol ? Symbol("[[ObservablePropIds]]") : "[[ObservablePropIds]]";
+var CID = supportsSymbol ? Symbol("[[BramCID]]") : "[[BramCID]]";
 
 var slice = Array.prototype.slice;
 
-function setupSetters(obj, setters) {
-  var props = Object.keys(setters);
-  props.forEach(function(prop){
-    var fn = setters[prop];
+function makeObservable(element, eventName) {
+  return Bram.listen(element, eventName)
+    .map(function(ev) {
+      ev.stopPropagation();
+      return ev.detail;
+    });
+}
 
+function setupProps(obj, props) {
+  Object.defineProperty(obj, CID, {
+    enumerable: false, writable: true, configurable: false,
+    value: 0
+  });
+
+  props.forEach(function(prop){
     Object.defineProperty(obj, prop, {
       get: function(){
-        return getSetters(this)[prop];
+        return getProps(this)[prop];
       },
       set: function(val){
-        getSetters(this)[prop] = val;
-        fn.call(this, this._bindings, val);
+        // Trigger a custom event that this observable will get
+        var id = getPropIds(this)[prop];
+        Bram.send(this, val, id, false);
       }
     });
   });
 }
 
-function defineSetters(obj) {
-  Object.defineProperty(obj, INTERNAL_SETTERS, {
+function makeProps(element, propNames) {
+  var tag = element.tagName.toLowerCase();
+  var proto = Object.getPrototypeOf(element);
+  var propIds = getPropIds(element);
+  var props = getProps(element);
+  propNames.forEach(function(prop){
+    var id = propIds[prop] = tag + "-" + prop + "-" + proto[CID]++;
+    props[prop] = makeObservable(element, id);
+  });
+}
+
+function defineProps(obj) {
+  Object.defineProperty(obj, INTERNAL_PROPS, {
+    enumerable: false, writable: false, configurable: false,
+    value: {}
+  });
+  Object.defineProperty(obj, INTERNAL_PROPIDS, {
     enumerable: false, writable: false, configurable: false,
     value: {}
   });
 }
 
-function getSetters(obj) {
-  return obj[INTERNAL_SETTERS];
+function getProps(obj) {
+  return obj[INTERNAL_PROPS];
+}
+
+function getPropIds(obj) {
+  return obj[INTERNAL_PROPIDS];
 }
 
 Bram.element = function(defn){
@@ -58,13 +91,15 @@ Bram.element = function(defn){
     }
   });
 
-  if(defn.setters) {
-    setupSetters(proto, defn.setters);
+  if(defn.props) {
+    setupProps(proto, defn.props);
   }
 
   proto.createdCallback = function(){
-    if(defn.setters && !getSetters(this))
-      defineSetters(this);
+    if(defn.props && !getProps(this)) {
+      defineProps(this);
+      makeProps(this, defn.props);
+    }
 
     var root;
     if(defn.template) {
@@ -110,14 +145,75 @@ Bram.element = function(defn){
   return document.registerElement(defn.tag, registerOptions);
 };
 
-Bram.report = function(el, observable, eventName, bubbles){
+if(typeof Rx === 'object' && Rx.Observable)
+  Bram.Observable = Rx.Observable;
+else if(typeof Observable === 'function')
+  Bram.Observable = Observable;
+else {
+  console.error('Bram requires an Observable');
+  return;
+}
+
+Bram.listen = function(element, eventName){
+  return Bram.Observable.fromEvent
+    ? Bram.Observable.fromEvent(element, eventName)
+    : new Bram.Observable(function(observer){
+    // Create an event handler which sends data to the sink
+    var handler = function(event) { observer.next(event); }
+
+    // Attach the event handler
+    element.addEventListener(eventName, handler, true);
+
+    // Return a function which will cancel the event stream
+    return function(){
+      // Detach the event handler from the element
+      element.removeEventListener(eventName, handler, true);
+    };
+  });
+}
+
+Bram.mailbox = function(element){
+  var address = 'bram-appchange';
+  if(arguments.length === 1) {
+    // element-contextual address
+    if(!element.prototype[CID]) {
+      Object.defineProperty(element.prototype, CID, {
+        enumerable: false, writable: false, configurable: false,
+        value: 0
+      });
+    }
+    var cid = element.prototype[CID]++;
+    address = address + '-' + element.tagName.toLowerCase() + '-' + cid;
+
+    element.send = function(observable){
+      Bram.send(this, observable, address, false);
+    };
+  }
+  element = element || document.body;
+
+  var observable = Bram.listen(element, address);
+  return observable.map(function(ev) {
+    ev.stopPropagation();
+    return ev.detail;
+  });
+};
+
+Bram.trigger = function(el, val, eventName, bubbles){
+  var event = new CustomEvent(eventName, {
+    bubbles: bubbles !== false,
+    detail: val
+  });
+  el.dispatchEvent(event);
+};
+
+Bram.send = function(el, observable, eventName, bubbles){
+  if(arguments.length === 2) {
+    eventName = 'bram-appchange';
+  }
+
   // TODO save this subscription
   var subscription = observable.subscribe(function(val){
-    var event = new CustomEvent(eventName, {
-      bubbles: bubbles !== false,
-      detail: val
-    });
-    el.dispatchEvent(event);
+    Bram.trigger(el, val, eventName, bubbles);
   });
 
 };
@@ -169,32 +265,25 @@ Bind.prototype._unbind = function(){
   });
 };
 
-Bind.prototype._setup = function(selector, prop, setter){
+Bind.prototype._setup = function(selector, observable, setter){
   var el = this._getElement(selector);
-  var compute = this._getCompute(prop);
-  var fn = function(){
-    setter(el, compute);
-  };
-
-  this._register(new Binding(function(){
-    compute.bind("change", fn);
-  }, function(){
-    compute.unbind("change", fn);
-  }));
-  fn();
-
+  observable.subscribe(function(value){
+    setter(el, value);
+  });
 };
 
 Bind.prototype.text = function(selector, observable){
-  var el = this._getElement(selector);
-
-  observable.subscribe(function(value){
+  this._setup(selector, observable, function(el, value){
     el.textContent = value;
   });
+};
 
-  /*this._setup(selector, prop, function(el, compute){
-    el.textContent = compute();
-  });*/
+Bind.prototype.value = function(selector, observable){
+  this._setup(selector, observable, function(el, value){
+    if(el.value !== value) {
+      el.value = value;
+    }
+  });
 };
 
 Bind.prototype.condAttr = function(selector, attrName, observable){
@@ -209,40 +298,14 @@ Bind.prototype.condAttr = function(selector, attrName, observable){
   });
 };
 
-Bind.prototype.cond = function(prop, selector){
-  var el = this._getElement(selector);
-  var compute = this._getCompute(prop);
-  var parent = el.parentNode;
-  var ref = el.nextSibling;
-
-  var position = function(){
-    var inDom = !!el.parentNode;
-    var show = compute();
-
-    if(show) {
-      if(!inDom) {
-        if(parent !== ref.parentNode) {
-          parent = ref.parentNode;
-        }
-
-        parent.insertBefore(el, ref);
-      }
-    } else {
-      if(inDom) {
-        ref = el.nextSibling;
-        parent = el.parentNode;
-        parent.removeChild(el);
-      }
+Bind.prototype.hideWhen = function(selector, observable){
+  var current = this._getElement(selector).style.display;
+  this._setup(selector, observable, function(el, hide){
+    var val = hide ? 'none': current;
+    if(el.style.display !== val) {
+      el.style.display = val;
     }
-  };
-
-  this._register(new Binding(function(){
-    compute.bind("change", position);
-  }, function(){
-    compute.unbind("change", position);
-  }));
-
-  position();
+  });
 };
 
 Bind.prototype.list = function(observable, key, templateSelector,
@@ -637,6 +700,39 @@ Button.prototype = {
   }
 };
 
+Bram.element({
+  tag: "action-bar",
+  template: "#action-bar-template",
+  useShadow: false,
+
+  props: ['actions'],
+
+  created: function(bind){
+    this.actions.subscribe(detail => {
+      if(detail.action === 'add')
+        this.addActions(detail);
+      else
+        this.removeActions();
+    });
+  },
+
+  proto: {
+    addActions: function(detail){
+      var el = document.createElement(detail.tag);
+      detail.bind(el);
+      this.current = el;
+      this.appendChild(el);
+    },
+    removeActions: function(){
+      if(this.current) {
+        this.current.parentNode.removeChild(this.current);
+        this.current = undefined;
+      }
+    }
+  }
+
+});
+
 function Work() {
   this.elem = document.getElementById('work');
 }
@@ -832,26 +928,56 @@ Bram.element({
   template: "#sessionlist-template",
   useShadow: false,
 
-  setters: {
-    sessions: function(bind, sessions){
-      bind.list(sessions, 'id', 'template', '.sessions', function(el, session){
-        var date = session.beginDate;
-        el.querySelector('.date').textContent = getMonthName(date, true)
-          + ' ' + date.getDate();
+  props: ["sessions"],
 
-        el.querySelector('.time').textContent = session.time;
+  created: function(bind){
+    var anyLabelSelected = Rx.Observable.fromEvent(this, 'label-clicked')
+      .map(ev => {
+        ev.detail.stopPropagation();
+        return ev.detail.target.checked ? 1 : -1
+      })
+      .startWith(0)
+      .scan((acc, value) => acc + value)
+      .map(val => val > 0)
+      .distinctUntilChanged();
 
-        // Upgrade input element
-        var label = el.querySelector('label input');
-        componentHandler.upgradeElement(label);
+    bind.list(this.sessions, 'id', 'template', '.sessions', function(el, session){
+      var date = session.beginDate;
+      el.querySelector('.date').textContent = getMonthName(date, true)
+        + ' ' + date.getDate();
 
-        var li = el.querySelector('li');
-        var sessionClicked = Rx.Observable.fromEvent(li, 'click')
-          .map(() => ({ page: 'session', data: session }));
+      el.querySelector('.time').textContent = session.time;
 
-        Bram.report(this, sessionClicked, 'page-change');
-      });
-    }
+      // Upgrade input element
+      var label = el.querySelector('label input');
+      componentHandler.upgradeElement(label);
+
+      var li = el.querySelector('li');
+      var sessionClicked = Rx.Observable.fromEvent(li, 'click')
+        .map(() => ({ page: 'session', data: session }));
+
+      Bram.send(this, sessionClicked, 'page-change');
+
+      var label = li.querySelector('label');
+      var labelsClicked = Rx.Observable.fromEvent(label, 'click')
+      Bram.send(this, labelsClicked, 'label-clicked');
+    });
+
+    var sessionActions = this.sessions.flatMap(sessions => {
+      return anyLabelSelected.map(selected => ({
+        selected: selected,
+        sessions: sessions
+      }));
+    }).map(ev => {
+      return {
+        action: ev.selected ? 'add' : 'remove',
+        tag: 'sessionlist-action-bar',
+        bind: function(el){
+          el.sessions = ev.sessions;
+        }
+      };
+    });
+    Bram.send(this, sessionActions, 'action-bar-change');
   }
 });
 
@@ -941,13 +1067,18 @@ Bram.element({
   template: "#sessionpage-template",
   useShadow: false,
 
-  setters: {
-    session: function(bind, session){
+  proto: {
+    get session() {
+      return this._session;
+    },
+
+    set session(session){
       var date = session.beginDate;
       this.querySelector('.date').textContent = getMonthName(date) +
         ' ' + date.getDate();
 
       this.querySelector('.time').textContent = session.time.toString();
+      this._session = session;
     }
   }
 });
@@ -965,9 +1096,9 @@ Bram.element({
     };
 
     var poppedRoute = Rx.Observable.fromEvent(window, 'popstate')
-      .map(ev => Object.assign({ setRoute: false }, ev.state || {page: 'work'}));
+      .map(ev => Object.assign({ setRoute: false }, ev.state || {page: 'main'}));
 
-    Bram.report(this, poppedRoute, 'page-change');
+    Bram.send(this, poppedRoute, 'page-change');
 
     var pageSet = Rx.Observable.fromEvent(this, 'page-change')
       .map(ev => ev.detail);
@@ -984,17 +1115,26 @@ Bram.element({
       var placeHolder = document.createTextNode('');
       var parent = this.current.el.parentNode;
 
-      // Remove the current node
       parent.insertBefore(placeHolder, this.current.el);
-      parent.removeChild(this.current.el);
+
+      // Remove the current node
+      if(this.current.page === 'main') {
+        this.querySelector('main-page').style.display = 'none';
+      } else {
+        parent.removeChild(this.current.el);
+      }
 
       // Insert the new page
-      parent.insertBefore(clone, placeHolder);
+      if(ev.page === 'main') {
+        this.querySelector('main-page').style.display = '';
+      } else {
+        parent.insertBefore(clone, placeHolder);
+      }
       parent.removeChild(placeHolder);
 
       this.current = {
         page: ev.page,
-        el: newEl
+        el: ev.page === 'main' ? this.querySelector('main-page') : newEl
       };
 
       if(ev.setRoute !== false && page.route) {
@@ -1010,10 +1150,15 @@ Bram.element({
       .filter(val => val);
 
     // Hide the tab bar when not on the main page.
-    var hideTabBar = pageSet.map(ev => ev.page !== 'work').startWith(false)
+    var hideTabBar = pageSet.map(ev => ev.page !== 'main').startWith(false)
     mainTabsReady.first().subscribe(() => {
       bind.condAttr('.mdl-layout__tab-bar-container', 'hidden', hideTabBar);
     });
+
+    // Action bar
+    var actionBarChange = Rx.Observable.fromEvent(this, 'action-bar-change')
+      .map(ev => ev.detail);
+    this.querySelector('action-bar').actions = actionBarChange;
   },
 
   proto: {
@@ -1033,7 +1178,7 @@ Bram.element({
     },
 
     pages: {
-      work: {
+      main: {
         template: '#mainpage-tag-template',
         bind: function(frag){
           return frag.querySelector('main-page');
@@ -1102,6 +1247,23 @@ var Actions = extend(Listener, {
     });
   }
 });
+
+Bram.element({
+  tag: 'sessionlist-action-bar',
+  template: '#sessionlistaction-template',
+  useShadow: false,
+
+  created: function(){
+    var del = this.querySelector('#deletesession-button');
+    var delEvents = Rx.Observable.fromEvent(del, 'click');
+
+    delEvents.map(() => this.sessions)
+      .map(sessions => {
+        debugger;
+      })
+      .subscribe();
+  }
+})
 
 function getSelectedSessions() {
     var base = SessionList.base;
@@ -1247,27 +1409,6 @@ var DrawerButton = {
   setIcon: function(txt) {
     this.base.querySelector('i').textContent = txt;
     componentHandler.upgradeElement(this.base);
-  }
-};
-
-var Navigator = {
-  go: function(state){
-    var page = state.page;
-    switch(page) {
-      case 'work':
-        MainPage.work.up(true);
-        break;
-      case 'log':
-        MainPage.log.up(true);
-        break;
-    }
-  },
-
-  save: function(state, title, url){
-    var currentState = history.state || {};
-    if(state.page !== currentState.page) {
-      history.pushState(state, title, url);
-    }
   }
 };
 

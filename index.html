@@ -28,7 +28,9 @@
           <!-- Add spacer, to align navigation to the right -->
           <div class="mdl-layout-spacer"></div>
           <!-- Navigation -->
-          <nav id="actionbar" class="mdl-navigation"></nav>
+          <nav class="mdl-navigation">
+            <action-bar></action-bar>
+          </nav>
         </div>
         <!-- Tabs -->
         <div id="main-tabs" class="mdl-layout__tab-bar mdl-js-ripple-effect">
@@ -110,6 +112,11 @@
         </div>
       </div>
     </section>
+  </template>
+  <template id="action-bar-template">
+    <div>
+
+    </div>
   </template>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.0.7/rx.all.js"></script>
   <script src="js/atwork.js"></script>

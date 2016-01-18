@@ -11,6 +11,7 @@ modules = js/bram.js\
           src/listener.js\
           src/session.js\
           src/button.js\
+          src/action_bar.js\
           src/work.js\
           src/work_page.js\
           src/main_page.js\

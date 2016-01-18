@@ -15,26 +15,56 @@ Bram.element({
   template: "#sessionlist-template",
   useShadow: false,
 
-  setters: {
-    sessions: function(bind, sessions){
-      bind.list(sessions, 'id', 'template', '.sessions', function(el, session){
-        var date = session.beginDate;
-        el.querySelector('.date').textContent = getMonthName(date, true)
-          + ' ' + date.getDate();
+  props: ["sessions"],
 
-        el.querySelector('.time').textContent = session.time;
+  created: function(bind){
+    var anyLabelSelected = Rx.Observable.fromEvent(this, 'label-clicked')
+      .map(ev => {
+        ev.detail.stopPropagation();
+        return ev.detail.target.checked ? 1 : -1
+      })
+      .startWith(0)
+      .scan((acc, value) => acc + value)
+      .map(val => val > 0)
+      .distinctUntilChanged();
 
-        // Upgrade input element
-        var label = el.querySelector('label input');
-        componentHandler.upgradeElement(label);
+    bind.list(this.sessions, 'id', 'template', '.sessions', function(el, session){
+      var date = session.beginDate;
+      el.querySelector('.date').textContent = getMonthName(date, true)
+        + ' ' + date.getDate();
 
-        var li = el.querySelector('li');
-        var sessionClicked = Rx.Observable.fromEvent(li, 'click')
-          .map(() => ({ page: 'session', data: session }));
+      el.querySelector('.time').textContent = session.time;
 
-        Bram.report(this, sessionClicked, 'page-change');
-      });
-    }
+      // Upgrade input element
+      var label = el.querySelector('label input');
+      componentHandler.upgradeElement(label);
+
+      var li = el.querySelector('li');
+      var sessionClicked = Rx.Observable.fromEvent(li, 'click')
+        .map(() => ({ page: 'session', data: session }));
+
+      Bram.send(this, sessionClicked, 'page-change');
+
+      var label = li.querySelector('label');
+      var labelsClicked = Rx.Observable.fromEvent(label, 'click')
+      Bram.send(this, labelsClicked, 'label-clicked');
+    });
+
+    var sessionActions = this.sessions.flatMap(sessions => {
+      return anyLabelSelected.map(selected => ({
+        selected: selected,
+        sessions: sessions
+      }));
+    }).map(ev => {
+      return {
+        action: ev.selected ? 'add' : 'remove',
+        tag: 'sessionlist-action-bar',
+        bind: function(el){
+          el.sessions = ev.sessions;
+        }
+      };
+    });
+    Bram.send(this, sessionActions, 'action-bar-change');
   }
 });
 

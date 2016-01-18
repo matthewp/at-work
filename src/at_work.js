@@ -11,9 +11,9 @@ Bram.element({
     };
 
     var poppedRoute = Rx.Observable.fromEvent(window, 'popstate')
-      .map(ev => Object.assign({ setRoute: false }, ev.state || {page: 'work'}));
+      .map(ev => Object.assign({ setRoute: false }, ev.state || {page: 'main'}));
 
-    Bram.report(this, poppedRoute, 'page-change');
+    Bram.send(this, poppedRoute, 'page-change');
 
     var pageSet = Rx.Observable.fromEvent(this, 'page-change')
       .map(ev => ev.detail);
@@ -30,17 +30,26 @@ Bram.element({
       var placeHolder = document.createTextNode('');
       var parent = this.current.el.parentNode;
 
-      // Remove the current node
       parent.insertBefore(placeHolder, this.current.el);
-      parent.removeChild(this.current.el);
+
+      // Remove the current node
+      if(this.current.page === 'main') {
+        this.querySelector('main-page').style.display = 'none';
+      } else {
+        parent.removeChild(this.current.el);
+      }
 
       // Insert the new page
-      parent.insertBefore(clone, placeHolder);
+      if(ev.page === 'main') {
+        this.querySelector('main-page').style.display = '';
+      } else {
+        parent.insertBefore(clone, placeHolder);
+      }
       parent.removeChild(placeHolder);
 
       this.current = {
         page: ev.page,
-        el: newEl
+        el: ev.page === 'main' ? this.querySelector('main-page') : newEl
       };
 
       if(ev.setRoute !== false && page.route) {
@@ -56,10 +65,15 @@ Bram.element({
       .filter(val => val);
 
     // Hide the tab bar when not on the main page.
-    var hideTabBar = pageSet.map(ev => ev.page !== 'work').startWith(false)
+    var hideTabBar = pageSet.map(ev => ev.page !== 'main').startWith(false)
     mainTabsReady.first().subscribe(() => {
       bind.condAttr('.mdl-layout__tab-bar-container', 'hidden', hideTabBar);
     });
+
+    // Action bar
+    var actionBarChange = Rx.Observable.fromEvent(this, 'action-bar-change')
+      .map(ev => ev.detail);
+    this.querySelector('action-bar').actions = actionBarChange;
   },
 
   proto: {
@@ -79,7 +93,7 @@ Bram.element({
     },
 
     pages: {
-      work: {
+      main: {
         template: '#mainpage-tag-template',
         bind: function(frag){
           return frag.querySelector('main-page');
